@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
 
-public class ZCode : MonoBehaviour {    
+public class ZCode : MonoBehaviour
+{
+    #region PreZC
 
     // Audio Manager
     public GameObject soundManagerObject;
@@ -51,6 +53,9 @@ public class ZCode : MonoBehaviour {
 
     public static int GPG_GTIME;
     public static int GPG_UL;
+
+    #endregion preZC
+
     public void BattleSetter()
     {                
         isGameOver = false;
@@ -109,15 +114,15 @@ public class ZCode : MonoBehaviour {
         TowerX = new int[L3];
         TowerY = new int[L3];
         isDrummedByAI = false;
-    }    
+    }
 
-    // Make sure the hamla is like AOE3 archers attacking from range and not going into suicide with melee
-    // REMOVE the parameter for Begin class later
-    // Now used to log text
+    #region postZC
+
     public void SendMessage2GUI( string msg2 )
     {
         guiCBScriptHolder.GetComponent<CbScript>().msgShow(msg2);
     }
+
     public GameObject guiCBScriptHolder;
     public Color[] castleColorsBase ;
     public GameObject CameraForZoomObject;
@@ -131,7 +136,7 @@ public class ZCode : MonoBehaviour {
     public Color selectColor;
     public Color moveColor;
     private float distBtwTroops = 3.001f;// This must be same as in spacing units in JLife
-    // Pay attention while this is used by OnClick Function to float int division
+    
     void EditorPause()
     {
         Debug.Break();
@@ -163,8 +168,10 @@ public class ZCode : MonoBehaviour {
         BattleSetter();// Server must do this with proper session settings , ie nop and all stuff ( like default coins start )
         Invoke("adjustCamera",1f);        
     }
+
     private int zoomCount = 0;
     private BE.MobileRTSCam mRCam ;
+
     private void startCameraCinematically()
     {
         if (zoomCount < 40)// #Banga...requirement to see both towers
@@ -180,6 +187,7 @@ public class ZCode : MonoBehaviour {
             Invoke("startCameraCinematically", 0.1f);
         }     
     }
+
     private void adjustCamera()
     {
         try
@@ -192,6 +200,7 @@ public class ZCode : MonoBehaviour {
             Invoke("adjustCamera", 1f);
         }
     }
+
     void chooseSelectionColor( int _pid )
     {
         attackColor = castleColorsBase[_pid];
@@ -267,11 +276,11 @@ public class ZCode : MonoBehaviour {
     {
         DestRing.position = new Vector3(10f, -99f, 10f);
     }
-
-    // Use this for initialization    
+    
     public Transform arrowModelBase;
     public Transform[] Models ;
     public Begin b ;
+
 	void Start()
     {        
         b = new Begin( this , distBtwTroops , castleColorsBase);
@@ -300,8 +309,7 @@ public class ZCode : MonoBehaviour {
         }
         else
         {
-            idleAllUnits();  
-            // Time Up
+            idleAllUnits();              
             isTimeUp = true;
         }        
     }
@@ -322,22 +330,238 @@ public class ZCode : MonoBehaviour {
     public void logThisText( string text )
     {
         print( text );
-    }    
+    }
+
+    #endregion postZC
 }
 
-//------------------ T H I S --- M E A N S --- W A R------------------------------
-// Need to check over kill condition by incrementing arch attack to 690 on enemy cav
-// make movement a bit strategic
-// make ......
-// Contains IDEONE code
-
+//------------------ T H I S --- M E A N S --- W A R ------------------------------
 
 public class Begin
 {
+    #region preB
+
     public int NOP ;
     public int PID ;
     public int TID ;
     public int COINS ;
+    public int selectedGid = -1;
+    public ZCode baseScript;
+    public Transform arrowModel;
+    public Transform[] _models;
+    public SortedDictionary<int, Transform> allModels;           // Holds ( id , Noviceid ) Relationship
+    public SortedDictionary<int, JLife> allScripts;           // Holds ( id , Noviceid ) Relationship
+    public SortedDictionary<int, Transform> allProjectileModels;  // Holds ( id , ArrowMesh ) Relationship    
+
+    public void command(int _sx, int _sy, out string Log, out int n32x, out int n32y)
+    {
+        Log = "";
+        lastClicked2 = 0;
+        n32x = -1;
+        n32y = -1;
+        if (_sx < 0 || _sx >= groundLength || _sy < 0 || _sy >= groundWidth)
+        {
+            return;// X || Y- Out Of Bounds
+        }
+
+        if (ZCode.ZDepButtonToggle)// is ready to deploy
+        {
+            int _g9x = _sx;
+            int _g9y = _sy;
+            int _s9x = -1;
+            int _s9y = -1;
+            if (PID == 1)// Quadrant for P1
+            {
+                if (_sx > groundLength / 2)//&& _sy < groundWidth / 2 )
+                {
+                    _s9x = groundLength / 2;
+                }
+                if (_sy > groundWidth / 2)
+                {
+                    _s9y = groundWidth / 2;
+                }
+            }
+            if (PID == 2)// Quadrant for P2
+            {
+                if (_sx < groundLength / 2)// && _sy < groundWidth / 2)
+                {
+                    _s9x = groundLength / 2;
+                }
+                if (_sy > groundWidth / 2)
+                {
+                    _s9y = groundWidth / 2;
+                }
+            }
+            if (PID == 3)// Quadrant for P3
+            {
+                if (_sx > groundLength / 2)//&& _sy > groundWidth / 2)
+                {
+                    _s9x = groundLength / 2;
+                }
+                if (_sy < groundWidth / 2)
+                {
+                    _s9y = groundWidth / 2;
+                }
+            }
+            if (PID == 4)// Quadrant for P4
+            {
+                if (_sx < groundLength / 2)//&& _sy > groundWidth / 2)
+                {
+                    _s9x = groundLength / 2;
+                }
+                if (_sy < groundWidth / 2)
+                {
+                    _s9y = groundWidth / 2;
+                }
+            }
+            bool isDeployManaged = false;
+            if (_s9x != -1)
+            {
+                _sx = _s9x;
+                isDeployManaged = true;
+            }
+            if (_s9y != -1)
+            {
+                _sy = _s9y;
+                isDeployManaged = true;
+            }
+            /*
+            if ( ! deployAreaNear )
+            {
+
+                baseScript.SendMessage2GUI("Deploy Near To Base !!!");
+                return;
+            }//CLAMP AND DEPLOY
+            */
+
+            // DEPLOY SCRIPT
+            // TEA TIME            
+            // The deploy information should be pid , x , y and wid , so we can manage it with server variables
+            // For now i made it P1
+            // Spawn Function PID , _sx , _sy , Deck            
+            int sGid = -1;
+            sGid = SpawnFunction(PID, ZCode.ZDECK, _sx, _sy);// For now i am using PID later on pid from request                        
+            // on ACK from server u should clear the deck
+            for (int c34 = 0; c34 < ZCode.ZDECK.Length; c34++)
+            {
+                ZCode.ZDECK[c34] = 0;
+            }
+            selectedGid = sGid;// Making it normal for further selection
+            n32x = _sx;
+            n32y = _sy;
+            if (isDeployManaged)
+            {
+                int is_attack = 0;
+                if (grid[_g9x, _g9y, 0] != 0 && allUnits.ContainsKey(grid[_g9x, _g9y, 0]) && allUnits[grid[_g9x, _g9y, 0]].tid != TID)
+                {
+                    is_attack = 1;
+                }
+                // The below call should be queued back to spawn like spawn and move or spawn and attack call
+                cMove(-1, selectedGid, _g9x, _g9y, is_attack);// Needs Review "P2 so put PID=2"
+                // i put -1 bcoz no sound on deploy and move... only horn on standing units move
+            }
+            ZCode.ZDepButtonToggle = false;
+            Log = "select";
+            return;
+        }
+
+
+        int hitID = grid[_sx, _sy, 0];
+        if (selectedGid == -1)
+        {
+            if (hitID != 0)
+            {
+                if (allUnits.ContainsKey(hitID))// fail safe in case of dead unit selection
+                {
+                    if (allUnits[hitID].pid == PID)
+                    {
+                        selectedGid = allUnits[hitID].gid;
+                        Log = "select";
+                    }
+                }
+            }
+            // else clicked on empty square
+        }
+        else
+        {// SECOND CLICK            
+            if (hitID != 0 && allUnits.ContainsKey(hitID))
+            {
+                if (allUnits[hitID].pid == PID)
+                {
+                    selectedGid = allUnits[hitID].gid; // Change Selection
+                    Log = "select";
+                }
+                else
+                {
+                    // Make Enemy                     
+                    cMove(PID, selectedGid, _sx, _sy, 1);//AFTER UPPER REVOLUTIONARY 13MAY                    
+                    Log = "hamla";// 1 stands for attacking
+                }
+            }
+            else// Move 
+            {
+                bool isHumanErgo = false;
+                bool isMobileEnemy = false;
+                int[] d3x = new int[] { -1, 0, 1, -1, 1, -1, 0, 1 };
+                int[] d3y = new int[] { 1, 1, 1, 0, 0, -1, -1, -1 };
+                for (int rt3 = 0; rt3 < d3x.Length; rt3++)
+                {
+                    int n3x = _sx + d3x[rt3];
+                    int n3y = _sy + d3y[rt3];
+                    if (!(n3x < 0 || n3x >= groundLength || n3y < 0 || n3y >= groundWidth))
+                    {
+                        int t3id = grid[n3x, n3y, 0];
+                        if (t3id != 0 && allUnits[t3id].pid == PID && allUnits[t3id].gid != selectedGid && allUnits[t3id].wid > 0)//To ensure defense ergo
+                        {
+                            // 27th May = selecting non-empty square instead of moving side to side
+                            selectedGid = allUnits[t3id].gid;// Selecting by human feel ,, nearest non-empty our unit                            
+                            isHumanErgo = true;
+                            Log = "select";
+                            n32x = n3x;
+                            n32y = n3y;
+                            break;
+                        }
+                        else if (t3id != 0 && allUnits[t3id].tid != TID)// Ergo Attacko
+                        {
+                            //Logger("mobile enemy attack");
+                            cMove(PID, selectedGid, _sx, _sy, 1);//AFTER UPPER REVOLUTIONARY 13MAY                    
+                            isMobileEnemy = true;
+                            Log = "hamla";// 1 stands for attacking
+                            n32x = n3x;
+                            n32y = n3y;
+                            break;
+                        }
+
+                    }
+                }
+                if (!isHumanErgo && !isMobileEnemy)
+                {
+                    cMove(PID, selectedGid, _sx, _sy, 0);
+                    //selectedGid = -1;
+                    Log = "move";
+                }
+            }
+        }
+    }
+
+    void aimTheArrow(Transform t2, int _x, int _y, int _dx, int _dy, int _id)
+    {
+        double radians = System.Math.Atan2(_dy - _y, _dx - _x);
+        int degrees = (int)(radians * 180 / System.Math.PI);
+        float curAngle = t2.rotation.eulerAngles.y;
+        curAngle = -curAngle;
+        t2.Rotate(new Vector3(0, curAngle - degrees, 0));
+        if (_id > 0) // == 0 means this is called for projectile // > 0 means we are classifying model : Unit : Archer
+        {
+            allModels[_id].SendMessage("healthBarLookAtCamera", SendMessageOptions.DontRequireReceiver);
+        }
+
+    }
+
+    #endregion preB
+
+    #region Queuable Synaptics
+
     public int SpawnFunction( int _pid , int[] ddeck , int _sx , int _sy )
     {
 
@@ -426,210 +650,8 @@ public class Begin
         }        
         return FirstID;// for Ergo deploy and attack
     }
-
-    public int selectedGid = -1;
-    public void command( int _sx , int _sy , out string Log , out int n32x , out int n32y )
-    {
-        Log = "";
-        lastClicked2 = 0;
-        n32x = -1;
-        n32y = -1;
-        if (_sx < 0 || _sx >= groundLength || _sy < 0 || _sy >= groundWidth)
-        {
-            return;// X || Y- Out Of Bounds
-        }
-
-        if ( ZCode.ZDepButtonToggle )// is ready to deploy
-        {            
-            int _g9x = _sx;
-            int _g9y = _sy;
-            int _s9x = -1;
-            int _s9y = -1;
-            if ( PID == 1 )// Quadrant for P1
-            {
-                if ( _sx > groundLength / 2 )//&& _sy < groundWidth / 2 )
-                {
-                    _s9x = groundLength / 2;
-                }
-                if ( _sy > groundWidth / 2 )
-                {
-                    _s9y = groundWidth / 2;
-                }
-            }
-            if (PID == 2)// Quadrant for P2
-            {
-                if ( _sx < groundLength / 2)// && _sy < groundWidth / 2)
-                {
-                    _s9x = groundLength / 2;
-                }
-                if ( _sy > groundWidth / 2 )
-                {
-                    _s9y = groundWidth / 2;
-                }
-            }
-            if (PID == 3)// Quadrant for P3
-            {
-                if ( _sx > groundLength / 2 )//&& _sy > groundWidth / 2)
-                {
-                    _s9x = groundLength / 2;
-                }
-                if (_sy < groundWidth / 2)
-                {
-                    _s9y = groundWidth / 2;
-                }
-            }
-            if (PID == 4)// Quadrant for P4
-            {
-                if (_sx < groundLength / 2 )//&& _sy > groundWidth / 2)
-                {
-                    _s9x = groundLength / 2;
-                }
-                if (_sy < groundWidth / 2)
-                {
-                    _s9y = groundWidth / 2;
-                }
-            }
-            bool isDeployManaged = false;
-            if ( _s9x != -1 )
-            {
-                _sx = _s9x;
-                isDeployManaged = true;
-            }
-            if ( _s9y != -1 )
-            {
-                _sy = _s9y;
-                isDeployManaged = true;
-            }
-            /*
-            if ( ! deployAreaNear )
-            {
-
-                baseScript.SendMessage2GUI("Deploy Near To Base !!!");
-                return;
-            }//CLAMP AND DEPLOY
-            */
-
-            // DEPLOY SCRIPT
-            // TEA TIME            
-            // The deploy information should be pid , x , y and wid , so we can manage it with server variables
-            // For now i made it P1
-            // Spawn Function PID , _sx , _sy , Deck            
-            int sGid = -1;                        
-            sGid = SpawnFunction(PID, ZCode.ZDECK, _sx, _sy);// For now i am using PID later on pid from request                        
-            // on ACK from server u should clear the deck
-            for ( int c34 = 0; c34 < ZCode.ZDECK.Length; c34++)
-            {
-                ZCode.ZDECK[c34] = 0;
-            }
-            selectedGid = sGid;// Making it normal for further selection
-            n32x = _sx;
-            n32y = _sy;
-            if ( isDeployManaged )
-            {
-                int is_attack = 0;
-                if ( grid[_g9x,_g9y,0]!=0 && allUnits.ContainsKey(grid[_g9x, _g9y, 0]) && allUnits[grid[_g9x,_g9y,0]].tid != TID )
-                {
-                    is_attack = 1;
-                }
-                cMove( 2 , selectedGid, _g9x, _g9y, is_attack);//P2 so put PID=2
-            }
-            ZCode.ZDepButtonToggle = false;
-            Log = "select";
-            return;
-        }
-                
-        
-        int hitID = grid[_sx, _sy, 0];        
-        if ( selectedGid == -1 )
-        {            
-            if ( hitID != 0 )
-            {
-                if ( allUnits.ContainsKey(hitID) )// fail safe in case of dead unit selection
-                {
-                    if (allUnits[hitID].pid == PID)
-                    {
-                        selectedGid = allUnits[hitID].gid;
-                        Log = "select";
-                    }
-                }                
-            }
-            // else clicked on empty square
-        }
-        else
-        {// SECOND CLICK            
-            if ( hitID != 0 && allUnits.ContainsKey(hitID) )
-            {
-                if ( allUnits[hitID].pid == PID )
-                {
-                    selectedGid = allUnits[hitID].gid; // Change Selection
-                    Log = "select";
-                }
-                else
-                {
-                    // Make Enemy
-                    //cMakeEnemy( selectedGid , allUnits[hitID].gid );
-                    cMove( PID , selectedGid , _sx , _sy , 1 );//AFTER UPPER REVOLUTIONARY 13MAY                    
-                    Log = "hamla" ;// 1 stands for attacking
-                }
-            }
-            else// Move 
-            {
-                bool isHumanErgo = false;
-                bool isMobileEnemy = false;
-                int[] d3x = new int[] { -1, 0, 1, -1, 1, -1, 0, 1 };
-                int[] d3y = new int[] {  1, 1, 1,  0, 0, -1,-1,-1 };
-                for ( int rt3 = 0; rt3 < d3x.Length; rt3++)
-                {
-                    int n3x = _sx + d3x[rt3];
-                    int n3y = _sy + d3y[rt3];
-                    if ( ! ( n3x < 0 || n3x >= groundLength || n3y < 0 || n3y >= groundWidth))
-                    {
-                        int t3id = grid[n3x, n3y, 0];
-                        if ( t3id != 0 && allUnits[t3id].pid == PID && allUnits[t3id].gid != selectedGid && allUnits[t3id].wid>0)//To ensure defense ergo
-                        {
-                            // 27th May = selecting non-empty square instead of moving side to side
-                            selectedGid = allUnits[t3id].gid;// Selecting by human feel ,, nearest non-empty our unit                            
-                            isHumanErgo = true;
-                            Log = "select";
-                            n32x = n3x;
-                            n32y = n3y;
-                            break;
-                        }
-                        else if (t3id != 0 && allUnits[t3id].tid != TID )// Ergo Attacko
-                        {
-                            //Logger("mobile enemy attack");
-                            cMove( PID , selectedGid, _sx, _sy, 1);//AFTER UPPER REVOLUTIONARY 13MAY                    
-                            isMobileEnemy = true;
-                            Log = "hamla";// 1 stands for attacking
-                            n32x = n3x;
-                            n32y = n3y;
-                            break;
-                        }
-
-                    }                    
-                }
-                if ( ! isHumanErgo && ! isMobileEnemy )
-                {
-                    cMove( PID , selectedGid, _sx, _sy , 0 );
-                    //selectedGid = -1;
-                    Log = "move";
-                }
-            }
-        }
-    }
-
-    public void cMakeEnemy ( int _targGID , int _enemyGID )
-    {
-        foreach (KeyValuePair<int, Fighter> entry in allUnits)
-        {
-            if (entry.Value.gid == _targGID)
-            {
-                entry.Value.egid = _enemyGID ;                
-            }
-        }        
-    }
-
-    public void cMove( int _pid2 , int _targGID , int targX , int targY , int isAttack )
+    
+    public void cMove( int _pidCurrent , int _targGID , int targX , int targY , int isAttack )
     {
         foreach (KeyValuePair<int, Fighter> entry in allUnits)
         {
@@ -647,21 +669,16 @@ public class Begin
                 
             }
         }
-        if ( _pid2 == PID )        
+        if ( _pidCurrent == PID )        
         {
             sfx.PlayLongClip(0,sfx.DrumsFolder[0], 0.3f );
         }
-        
+
     }
 
-    public ZCode baseScript ;
-    public Transform arrowModel;
-    public Transform[] _models;    
-    public SortedDictionary< int, Transform > allModels ;           // Holds ( id , Noviceid ) Relationship
-    public SortedDictionary< int, JLife >     allScripts;           // Holds ( id , Noviceid ) Relationship
-    public SortedDictionary< int, Transform > allProjectileModels;  // Holds ( id , ArrowMesh ) Relationship    
+    #endregion Queuable Synaptics
 
-    #region Init
+    #region Valuable Variables
 
     public int gtime;                                // Game Time
     public int fps;                                  // tmp Frame Number
@@ -681,6 +698,7 @@ public class Begin
     #region Testing Data
 
     public int first_time_print = 0;
+
     public String board;
 
     public int UnixTime()
@@ -821,10 +839,10 @@ public class Begin
 
     #endregion
 
-    #region Constructors    
+    #region Begin Constructors
+
     public Color[] castleColors;
     public int lastClicked2;
-
     public int[,] ArtOfWar;
     public SSound sfx;
     
@@ -991,29 +1009,12 @@ public class Begin
         Test_populategrid(board);
     }
 
-    #endregion
-
-    #region Graphics Engine Screen Update Method
-
-    //baseScript.SendMessage("logThisText", log3 ,SendMessageOptions.DontRequireReceiver); L O G G E R
-    
-    void aimTheArrow( Transform t2 , int _x , int _y, int _dx, int _dy , int _id )
-    {
-        double radians = System.Math.Atan2(_dy - _y, _dx - _x);
-        int degrees = (int)(radians * 180 / System.Math.PI);
-        float curAngle = t2.rotation.eulerAngles.y;
-        curAngle = -curAngle;
-        t2.Rotate(new Vector3(0, curAngle - degrees, 0));
-        if ( _id > 0 ) // == 0 means this is called for projectile // > 0 means we are classifying model : Unit : Archer
-        {
-            allModels[_id].SendMessage("healthBarLookAtCamera",SendMessageOptions.DontRequireReceiver);
-        }
-
-    }
-
+    #endregion      
+        
     public void UpdateCycle()// This is the Master Update
-    {
-        // Shifted From Beginning to End
+    {        
+        #region Calc 1 
+        
         ZCode.ZAlive = 0;// we will count them to put constraint on max units
         ZCode.ZAIUnits = 0;
         foreach (KeyValuePair<int, Fighter> entry in allUnits)
@@ -1063,8 +1064,12 @@ public class Begin
                 {
                     ZCode.ZAIUnits++;
                 }
-            }            
+            }
         }
+
+        #endregion
+
+        #region Calc 2 
 
         if (fps == 2)
         {
@@ -1081,9 +1086,12 @@ public class Begin
                     ZCode.TowerX[entry.Value.pid] = entry.Value.x;
                     ZCode.TowerY[entry.Value.pid] = entry.Value.y;
                 }
-
-            }                
+            }
         }
+
+        #endregion
+
+        #region Calc 3 
 
         if ( (fps-1) % (( maxFps * 8) / (fastFactor * arrowFrameDelay * 2 ) ) == 0 )// Testing 4
         {
@@ -1166,19 +1174,22 @@ public class Begin
                             arw.Value.step++;
                         }
                     }
-                }
-
-                
+                }                
             }
         }
 
+        #endregion        
+
         if (fps == ((maxFps * 8) / fastFactor)) // Equivalent to 1 second in gametime
         {
+            #region Cleaning Dead
+
             Console.WriteLine("Cycle Begins");
 
             ZCode.SpillScript.incSpriteTime();//To time the sprites
 
             int L4 = ZCode.ZNOP <= 1 ? 3 : ZCode.ZNOP + 1;
+
             for ( int i43 = 0; i43 < L4; i43++)
             {
                 for (int j43 = 0; j43 < ZCode.ZTUNITS + 1; j43++)
@@ -1186,8 +1197,11 @@ public class Begin
                     ZCode.ZCurrentUnitCount[i43, j43] = 0 ;
                 }
             }
+
             DateTime startD = DateTime.Now;
+
             lastClicked2++;
+
             if (lastClicked2 > 10)
             {
                 baseScript.hideDestRing();                
@@ -1199,32 +1213,17 @@ public class Begin
             }
 
             List<int> deadArrows = new List<int>();// BIG TIME CHECK THIS AGAIN
+
             if ( gtime % 2 == 0 )//June 5th MRNG AFTN BUG
             {
                 foreach (KeyValuePair<int, Arrow> arw in allArrows)//Rain of Arrows Here
-                {
-                    //if (arw.Value.waitTime < 0)                
-                    //{
-                    //int ahead = grid[arw.Value.atX, arw.Value.atY, 0];
-                    //int ahead2 = grid[arw.Value.atX, arw.Value.atY, 1];//JUN 5 update
-                    //if (ahead != 0 && ahead2 >= gtime )
+                {            
                     int ahead = arw.Value.neID;
                     if( allUnits.ContainsKey(ahead) ) 
                     {
-                        allUnits[ahead].health -= ( arw.Value.dmg * ArtOfWar[arw.Value.atype, allUnits[ahead].wid] ) ;
-                        // Make sure the square is occupied by enemy                                                                        
-
-                        /*
-                        if (allUnits[ahead].wid > 0)
-                        {
-                            allModels[ahead].SendMessage("showHealthBar", new int[] { allUnits[ahead].health, allUnits[ahead].maxHealth }, SendMessageOptions.DontRequireReceiver);
-                        } 
-                        */
-                        // CRAZY ERROR DEBUGGED AFTER 5hrs
+                        allUnits[ahead].health -= ( arw.Value.dmg * ArtOfWar[arw.Value.atype, allUnits[ahead].wid] ) ;                
                     }
-                    deadArrows.Add(arw.Key);
-                    //}
-                    //arw.Value.waitTime--;
+                    deadArrows.Add(arw.Key);                    
                 }
             }
             
@@ -1293,8 +1292,7 @@ public class Begin
                             entry.Value.gid,// This is for 1 second coloring
                             entry.Value.is_takingArrowDamage?1:0
                         };
-                        // CRITICAL UPDATE 1 
-                        //(allModels[entry.Value.id].gameObject).SendMessage("ModeUpdate", _packet, SendMessageOptions.DontRequireReceiver);
+                        // CRITICAL UPDATE 1                         
                         allScripts[entry.Value.id].ModeUpdate(_packet);
                         allUnits[entry.Value.id].is_takingArrowDamage = false;
                         int ahead = entry.Value.id; 
@@ -1306,7 +1304,9 @@ public class Begin
                     }
                 }
             }
+
             ZCode.GPG_GTIME = gtime;            
+
             foreach (int deadUnitID in deadUnits)
             {
                 if ( allUnits[deadUnitID].pid == PID )
@@ -1316,13 +1316,8 @@ public class Begin
                 grid[allUnits[deadUnitID].x, allUnits[deadUnitID].y, 0] = 0;
                 grid[allUnits[deadUnitID].x, allUnits[deadUnitID].y, 1] = 0;// Freeing grid space
                 if (allUnits[deadUnitID].wid > 0)
-                {
-                    //(allModels[deadUnitID].gameObject).SendMessage("Die", SendMessageOptions.DontRequireReceiver);
-                    //(allModels[deadUnitID].gameObject).SendMessage("modeImplement",0, SendMessageOptions.DontRequireReceiver);
-                    //(allModels[deadUnitID].gameObject).SendMessage("whenNotInUpdate", SendMessageOptions.DontRequireReceiver);
-
-                    allScripts[deadUnitID].Die(1);
-                    allScripts[deadUnitID].modeImplement(0);
+                {                    
+                    allScripts[deadUnitID].Die(1);                    
                     allScripts[deadUnitID].whenNotInUpdate();
                 }                
                 if (allUnits[deadUnitID].wid == 0)
@@ -1335,6 +1330,9 @@ public class Begin
                 allScripts.Remove(deadUnitID);
             }
 
+            #endregion
+
+            #region Handy Centroids
 
             // Make movement             
             Dictionary<int, int> counts = new Dictionary<int, int>();  // _gid , number of units belonging to gid
@@ -1404,20 +1402,29 @@ public class Begin
                 int _gid = ent.Key;
                 centroids_X[_gid] = centroids_X[_gid] / counts[_gid]; // average
                 centroids_Y[_gid] = centroids_Y[_gid] / counts[_gid];
-            }
-
-            //baseScript.SendMessage("logThisText", log3 ,SendMessageOptions.DontRequireReceiver); L O G G E R
+            }            
+            
             int currentArrowCount = allArrows.Count;
             int up = 1;// Units Processed , Sentinel to Start = 1 , Later on up = 0 , up++ on processing a unit
-            while (up > 0)// No change after an iteration , then fate says no further processing happens
+
+            #endregion            
+
+            while (up > 0)// No up means no further possible moves
             {
+                #region Genie Init
+
                 List<int>[] Genie = new List<int>[25];
                 for (int j = Genie.Length - 1; j >= 0; j--)
                 {
                     Genie[j] = new List<int>(); // Initializing the Genie For Strategic Movement
                 }
+
+                #endregion
+
                 foreach (KeyValuePair<int, Fighter> entry in allUnits) // Unit Processing
                 {
+                    #region Regroup and Mode Decision
+                    
                     if (entry.Value.is_processed)
                     {
                         continue; // Skip the processed units 
@@ -1703,6 +1710,10 @@ public class Begin
                     int shortest_x = -1;
                     int shortest_y = -1;
 
+                    #endregion
+
+                    #region Meele Fights
+
                     // check for meele attack
                     int ux, uy;
                     int dx, dy;
@@ -1781,7 +1792,10 @@ public class Begin
                     entry.Value.ny = shortest_y;
                     Genie[free_squares].Add(entry.Value.id);
 
+                    #endregion
                 }
+
+                #region Unit Battles
 
                 up = 0;
                 for (int j = Genie.Length - 1; j >= 0; j--)
@@ -1806,8 +1820,7 @@ public class Begin
                                         entryValue.ny,
                                         4
                                     };
-                            // CRITICAL UPDATE 4
-                            //(allModels[entryValue.id].gameObject).SendMessage("ModeUpdate", _packet4, SendMessageOptions.DontRequireReceiver);
+                            // CRITICAL UPDATE 4                            
                             allScripts[entryValue.id].ModeUpdate(_packet4);
                             entryValue.is_suddenHalt = false;
                             entryValue.mode = 0;// To Reset Archers shooting mode to normal
@@ -1846,8 +1859,7 @@ public class Begin
                                         entryValue.ny,
                                         2
                                     };
-                                    // CRITICAL UPDATE 2 
-                                    //(allModels[entryValue.id].gameObject).SendMessage("ModeUpdate", _packet2 , SendMessageOptions.DontRequireReceiver);
+                                    // CRITICAL UPDATE 2                                     
                                     allScripts[entryValue.id].ModeUpdate(_packet2);
 
                                     grid[entryValue.x, entryValue.y, 0] = 0;
@@ -1873,10 +1885,9 @@ public class Begin
                             {
                                 // Should check again for Room
                                 //entryValue.nx = entryValue.x;
-                                //entryValue.ny = entryValue.y;                                
-                                //(allModels[entryValue.id].gameObject).SendMessage("suddenHalt", SendMessageOptions.DontRequireReceiver);
+                                //entryValue.ny = entryValue.y;                                                                
                                 entryValue.is_suddenHalt = true;
-                            }
+                            }                           
                         }
 
                         // Attack
@@ -1910,8 +1921,7 @@ public class Begin
                                         allUnits[entryValue.eid].y ,                                        
                                         3
                                     };
-                                // CRITICAL UPDATE 3 
-                                //(allModels[entryValue.id].gameObject).SendMessage("ModeUpdate", _packet3, SendMessageOptions.DontRequireReceiver);
+                                // CRITICAL UPDATE 3                                 
                                 allScripts[entryValue.id].ModeUpdate(_packet3);
                             }
                             else
@@ -1929,8 +1939,22 @@ public class Begin
                         }
                     }
                 }
-                Console.WriteLine(up + " units processed in this loop");                
+                Console.WriteLine(up + " units processed in this loop");
+
+                #endregion
+
             }
+
+            #region Sound Plan
+
+            foreach (KeyValuePair<int, Fighter> entry in allUnits) // Unit Processing
+            {                
+                if ( ! entry.Value.is_processed)// these are in mode=1 but unable to move
+                {
+                    allScripts[entry.Value.id].suddenModelHalt();
+                }
+            }
+
             int maxModes = 10;
             int[,] audioHelpArray = new int[ZCode.ZTUNITS+1,maxModes];//Assuming 10 modes at max
             foreach (KeyValuePair<int, Fighter> entry in allUnits)
@@ -1978,8 +2002,8 @@ public class Begin
             }
             if (soldierMarch > 2)
             {
-                sfx.PlayLongClip(4,sfx.MarchingFolder[0], 0.5f);                
-            }
+                sfx.PlayLongClip(4,sfx.MarchingFolder[0], 0.5f);
+            }            
 
             // Arrow Rerouting
             foreach ( KeyValuePair<int,Arrow> ark in allArrows )
@@ -1999,9 +2023,11 @@ public class Begin
                     ark.Value.should_reroute = false;
                 }
             }
-            // End of While
 
-            // THE TREASURY
+            #endregion
+
+            #region Treasury and Hack Check
+            
             if (COINS != ZCode.ZCOINS)
             {
                 // Client Hack
@@ -2016,9 +2042,10 @@ public class Begin
             ZCode.ZCOINS = COINS;
             ZCode.ZGTIME = gtime+1;// here time is below incremented
 
-            // THE AI MODULE
-            // Prepare Army > Player and go to 3/4 distance
-            // For Now Spawn Some Units Near Base Randomly            
+            #endregion
+
+            #region The AI MODULE
+            
             if ( XStatics.NOP <= 1 && !ZCode.isAIdefeated )// switching off AI while debugging
             {                
                 int _weakF = -1;
@@ -2250,15 +2277,15 @@ public class Begin
             DateTime endD = DateTime.Now;
             TimeSpan gapD = ( endD - startD );
             //Logger( gapD.TotalSeconds );
-        }
 
-
+            #endregion
+        }        
         fps++;
-
-    }
-    #endregion
+        
+    }        
 
     #region Helper Methods
+
     public void Logger(object logtext)
     {
         //baseScript.SendMessage("logThisText", logtext.ToString() , SendMessageOptions.DontRequireReceiver);
@@ -2273,6 +2300,7 @@ public class Begin
     #endregion
 }
 
+//------------------ D A T A --- M O D E L S --------------------------------------
 
 public class Fighter
 {
@@ -2411,6 +2439,8 @@ public class Fighter
 
 public class Constants
 {
+    #region Properties
+
     private int wid;
     private int range;
     private int health;
@@ -2421,6 +2451,8 @@ public class Constants
     private int speed;
     private int delay;
     private int maxHealth;
+
+    #endregion
 
     #region Constructors
 
@@ -2540,6 +2572,8 @@ public class Constants
 
 public class Arrow
 {
+    #region Properties
+
     public int id;              // Fighter id who fired Arrow    
     public int apid;             // For Sound
     public int dmg;             // Damage value when Arrow hits target    
@@ -2562,6 +2596,8 @@ public class Arrow
     public int ADelay;
     public int neID; // Nearest Enemy ID
     public int atype; // wid 2 for normal arch , 4 for crossbow...and 6 for Maze may be
+
+    #endregion
 
     #region Constructors
 

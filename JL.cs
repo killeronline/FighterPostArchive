@@ -2,12 +2,13 @@ using UnityEngine;
 using System.Collections;
 using Image = UnityEngine.UI.Image;
 
-public class JLife : MonoBehaviour {
+public class JLife : MonoBehaviour
+{
 
+    #region PreJ
     // Root Folder -8.0.-19.25 , ROT : 40 45 0 
     // RTS MAIN CAM 0,0,z=-60...For Future Changes
-    // Archer code 6 is not tested     
-    // Unit Donation
+    
     public GameObject RoundRings;
     public int mode;
     public Animator anim;
@@ -19,23 +20,39 @@ public class JLife : MonoBehaviour {
     public bool is_alive;
     public Color selectionHighlightColor;
     public bool do_once;
-    public Color[] pColors;    
-    private float height ;
-    private int pmode;
-    private int countUp;
-    private bool instantColoring;
+    public Color[] pColors;        
     public Transform healthCanvas;
     public Transform healthDisplay;    
     public Camera myCamera;
     public bool isAlphaChangedForHealthBar;
     public bool isOnHomeScreen = false ;
     public AudioSource HorseSound;
+    private bool adjustedAttackSeperation = false;
+    private int cHealth = int.MaxValue;
+    private int cMaxHealth = -1;
+    private float height;    
+    private int countUp;
+    private int sudIdleCounter;
+    private bool instantColoring;
+    private float distBtwTroops = 3.001f;
+    private int _wid;
+    private int _pid;
+    private int _tid;
+    private int _gid;
+    private int _isTakingArrowDamage;
+    private int _x;
+    private int _y;
+    private int _nx;
+    private int _ny;
+    private int _ex;
+    private int _ey;
+    private int onScreenSeconds = 0;
 
     void Start()
     {
-        mode = 0 ;
-        pmode = 0;
+        mode = 0 ;        
         countUp = 0;
+        sudIdleCounter = 0;
         atime = 0f;
         ptime = 0f;
         miniTypes = new int[] { 5, 1, 3, 3, 0, 0, 3 };// IDLE , WALK , ATCK , DEAD , 4, 5, RNGE
@@ -65,9 +82,9 @@ public class JLife : MonoBehaviour {
             Invoke("onScreenRunner",1f);
         }
     }
-
-    private int onScreenSeconds = 0;
+    
     public bool isStayIdleWhenLoadingBar = false;
+
     public void onScreenRunner()
     {
         onScreenSeconds++;
@@ -115,11 +132,12 @@ public class JLife : MonoBehaviour {
                 postMode = miniTypes[mode];
             }
             anim.SetInteger(controlParam, (mode * 10) + postMode);
-
+            /*
             if ( ina2 == 1 )// full death
             {
                 InvokeRepeating("deathDecaying", 1f, 1f);
             }
+            */
             //showHealthBar( new int[] { -1,-1});// To remove the health bar            
         }
         if (ina2 == 1)// full death
@@ -127,6 +145,7 @@ public class JLife : MonoBehaviour {
             InvokeRepeating("deathDecaying", 1f, 1f);
         }
     }
+
     public void deathDecaying()
     {
         decay--;        
@@ -135,58 +154,11 @@ public class JLife : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-
-    private float distBtwTroops = 3.001f;
-
-    private int _wid;
-    private int _pid;
-    private int _tid;
-    private int _gid;
-    private int _isTakingArrowDamage;
-
-    // mode we already have
-    private int _x;
-    private int _y;    
-    private int _nx;
-    private int _ny;
-    private int _ex;
-    private int _ey;
-
-    public void ModeUpdate(int[] _packet)
-    {        
-        _wid    = _packet[0];
-        _pid    = _packet[1];
-        _tid    = _packet[2];
-
-        mode    = _packet[3];
-
-        _x      = _packet[4];
-        _y      = _packet[5];
-        _nx     = _packet[6];
-        _ny     = _packet[7];        
-
-        if ( _nx != -1 && _ny != -1 && (!(_nx == _x && _ny == _y)))
-        {
-            rotationFunction(_nx, _ny , mode);          
-        }
-
-        if (_packet[8] == 1)// CRITICAL UPDATE - 1 is the normal update - deemed to be the modeImplement 0 
-        {
-            transform.position = new Vector3(distBtwTroops * _x, height, distBtwTroops * _y);
-            modeImplement(0);
-            _gid = _packet[9];
-            _isTakingArrowDamage = _packet[10];
-
-        }
-        else
-        {
-            modeImplement(1);//Immediately Implementing Mode
-        }            
-    }
-
+    
     public float DNewRotAngle = 180 ;// to deny the continuity check initially
     public int interestAngle = 180;    
     public bool isContinuity = false;
+
     public void rotationFunction(int _dx, int _dy, int mR)
     {
         double radians = System.Math.Atan2(_dy - _y, _dx - _x);
@@ -262,7 +234,7 @@ public class JLife : MonoBehaviour {
             }
             else
             {                
-                //suddenModelHalt();                
+                suddenModelHalt();   // For halting the unit after reaching the point             
             }
             if ( isContinuity )
             {
@@ -270,53 +242,48 @@ public class JLife : MonoBehaviour {
                 healthBarLookAtCamera();                
             }
             // for performance can this be inside of magnitude above if
-        }        
+        }
     }
 
-    public void suddenModelHalt()
-    {        
-        mode = 0;
-        anim.SetInteger(controlParam, (mode * 10) + 1);//01
-        pmode = mode;
-    }
+    #endregion preJ
 
-    public void ManageSelectionRings()
+    public void ModeUpdate(int[] _packet)
     {
-        if (ZCode.ZSelectedGID > 0 && ZCode.ZSelectedGID == _gid)
+        _wid = _packet[0];
+        _pid = _packet[1];
+        _tid = _packet[2];
+
+        mode = _packet[3];
+
+        _x = _packet[4];
+        _y = _packet[5];
+        _nx = _packet[6];
+        _ny = _packet[7];
+
+        if (_nx != -1 && _ny != -1 && (!(_nx == _x && _ny == _y)))
         {
-            RoundRings.SetActive(true);
-            //this.transform.Find("Mesh_Pike").
-            //GetComponent<SkinnedMeshRenderer>()
-            //.material.color = selectionHighlightColor ;
+            rotationFunction(_nx, _ny, mode);
+        }
+
+        if (_packet[8] == 1)// CRITICAL UPDATE - 1 is the normal update - deemed to be the modeImplement 0 
+        {
+            transform.position = new Vector3(distBtwTroops * _x, height, distBtwTroops * _y);            
+            _gid = _packet[9];
+            _isTakingArrowDamage = _packet[10];
+            modeImplement(0);
+
         }
         else
         {
-            RoundRings.SetActive(false);
+            modeImplement(1);//Immediately Implementing Mode
         }
+        whenNotInUpdate();
     }
-
-    private bool adjustedAttackSeperation = false;
 
     public void modeImplement( int _skip )
     {
         if (is_alive)
         {
-            //int clip_time = 80; // Framesx2Below
-            //if ( (_skip > 0) || (atime > (ptime + (2.5f * clip_time / 60f))) )                    
-            /*
-            if (do_once)
-            {
-                if (_pid > 0)
-                {
-                    if (_pid % 2 == 0)// Meaning Team 2 Players
-                    {
-                        transform.Rotate(new Vector3(0, 181, 0));
-                        //transform.rotation.eulerAngles.Set(0f,90f,0f);
-                    }
-                    do_once = false;
-                }
-            }
-            */
             if ( _wid == 1 )// only for shielded units later swordsmen
             {
                 if ( _isTakingArrowDamage == 1 )
@@ -343,89 +310,88 @@ public class JLife : MonoBehaviour {
             }
             if (_pid > 0 && instantColoring)// When Donated to other player units change color
             {
-                this.transform.Find("Mesh_Pike").GetComponent<SkinnedMeshRenderer>().material.color = pColors[_pid];
+                if (do_once)
+                {
+                    this.transform.Find("Mesh_Pike").GetComponent<SkinnedMeshRenderer>().material.color = pColors[_pid];
+                    do_once = false;// will remove this code and also manage selection rings if the donation of army is not an idea
+                }                
                 ManageSelectionRings();
             }
-
 
             if (mode == 1 && (_nx == -1 && _ny == -1))
             {
                 //should move but cannot move
                 mode = 0;// may be this is the ghost movement like object moving but legs straight
-            }
-
-            if (_wid == 3 && _pid == 1 && mode == 0 && false)
+                // in skip:0 and countUp%3:1 i think i debugged the idle mode circle , check in new update
+            }            
+            
+            int postMode = Random.Range(1, miniTypes[mode] + 1);
+            if (postMode > miniTypes[mode])
             {
-                //print( "Pmode:"+pmode +" Mode:"+mode+" _skip:"+_skip+" atime:"+atime+" ptime:"+ptime);
-                //print(string.Format("CU:{6} , DEG:{4} , cRT:{7} , MODE:{5} , ({0},{1}) -> ({2},{3}) ", _x, _y, _nx, _ny, degrees, mode, _packet[8] , curAngle ));
-                //print(string.Format("CU:{6} , DEG:{4} , cRT:{7} , MODE:{5} , ({0},{1}) -> ({2},{3}) E:({8},{9})", _x, _y, _nx, _ny, null , mode, null , null , _ex , _ey ));
+                postMode = miniTypes[mode];
             }
-
-            if (is_alive)
+            bool natural = false; // Will make it true after testing 
+            if (mode == 0 && Random.Range(1, 10) < 9 && natural) // natural false is ok for now
             {
-                int postMode = Random.Range(1, miniTypes[mode] + 1);
-                if (postMode > miniTypes[mode])
+                postMode = 1; // try to be in 01 idle mode for 90%                 
+            }
+            // Need to process horse movement differently
+            //if ( mode == 1 && (_nx == -1 || _ny == -1 ) )      
+            // Skipping dead animation here because showhealthbar will trigger the death                                                  
+            //if ( _skip == 0 && (mode == 0 || mode == 3))// 3 cycle animations
+            if ( _skip == 0 )
+            {
+                if ( mode == 0 )
                 {
-                    postMode = miniTypes[mode];
-                }
-                bool natural = false; // Will make it true after testing 
-                if (mode == 0 && Random.Range(1, 10) < 9 && natural) // natural false is ok for now
-                {
-                    postMode = 1; // try to be in 01 idle mode for 90%                 
-                }
-                // Need to process horse movement differently
-                //if ( mode == 1 && (_nx == -1 || _ny == -1 ) )      
-                // Skipping dead animation here because showhealthbar will trigger the death                                                  
-                //if ( _skip == 0 && (mode == 0 || mode == 3))// 3 cycle animations
-                if ( _skip == 0 )
-                {
-                    if ( mode == 0 )
-                    {
-                        countUp++;
-                        if (countUp > 3)
-                        {
-                            anim.SetInteger(controlParam, (mode * 10) + postMode);
-                            countUp = 0;
-                        }
-                    }              
-                    else
+                    countUp++;
+                    if (countUp%3==1)
                     {
                         anim.SetInteger(controlParam, (mode * 10) + postMode);
-                        countUp = 0;
+                        countUp = 1;// 4 Mod 3 Equivalent
                     }
-                    adjustedAttackSeperation = false ;
+                }              
+                else
+                {
+                    anim.SetInteger(controlParam, (mode * 10) + postMode);
+                    countUp = 0;
+                }
+                adjustedAttackSeperation = false ;
+            }
+            else
+            {                                
+                if ( mode == 0 )
+                {
+                    if (countUp == 0)
+                    {
+                        suddenModelHalt();
+                    }
+                    // if countUp>0 means we are into mode0 to mode0 which needs no change in animation
                 }
                 else
                 {
-                    if ( mode != 0 )
+                    anim.SetInteger(controlParam, (mode * 10) + postMode);
+                    countUp = 0;
+                }
+
+                if ( mode == 2 && !adjustedAttackSeperation)
+                {// for archer ..write for diff units basing on seperation dist
+                    if ( _wid == 2 )
                     {
-                        anim.SetInteger(controlParam, (mode * 10) + postMode);
-                        countUp = 0;
+                        transform.Translate( new Vector3( distBtwTroops / 4 , 0 , 0 ));
+                        adjustedAttackSeperation = true;
                     }
-                    if ( mode == 2 && !adjustedAttackSeperation)
-                    {// for archer ..write for diff units basing on seperation dist
-                        if ( _wid == 2 )
-                        {
-                            transform.Translate( new Vector3( distBtwTroops / 4 , 0 , 0 ));
-                            adjustedAttackSeperation = true;
-                        }
-                        if ( _wid == 1 )
-                        {
-                            transform.Translate(new Vector3(distBtwTroops / 4, 0, 0));//0.75
-                            adjustedAttackSeperation = true;
-                        }
+                    if ( _wid == 1 )
+                    {
+                        transform.Translate(new Vector3(distBtwTroops / 4, 0, 0));//0.75
+                        adjustedAttackSeperation = true;
                     }
                 }
-                      
-                pmode = mode;// REMOVE WHILE CLEANING            
-
-            }
-
+            }                                                  
         }
     }
-    
-    private int cHealth = int.MaxValue ;
-    private int cMaxHealth = -1 ;
+
+    #region PostJ
+
     public void showHealthBar( int[] _data )// Helper Octoman
     {
         if (_data[1] > 0)// I used brilliant skip , when max health == 0 means only to look at camera
@@ -472,6 +438,7 @@ public class JLife : MonoBehaviour {
             //healthDisplay.localScale = new Vector3(0f, 1f, 1f);
         }
     }
+
     public void changeAlphaForHealthBar()
     {
         Color k23 = healthDisplay.GetComponent<Image>().color;
@@ -486,10 +453,37 @@ public class JLife : MonoBehaviour {
             );
     }
 
+    public void suddenModelHalt()
+    {
+        sudIdleCounter++;
+        if (sudIdleCounter%3==1)
+        {
+            anim.SetInteger(controlParam, (0 * 10) + 1);//01  
+            sudIdleCounter = 1; //Similar to 4Mod3 logic modImp skip:0 mode:0 case
+        }
+        whenNotInUpdate();
+    }
+
+    public void ManageSelectionRings()
+    {
+        if (ZCode.ZSelectedGID > 0 && ZCode.ZSelectedGID == _gid )
+        {
+            RoundRings.SetActive(true);
+            //this.transform.Find("Mesh_Pike").
+            //GetComponent<SkinnedMeshRenderer>()
+            //.material.color = selectionHighlightColor ;
+        }
+        else
+        {
+            RoundRings.SetActive(false);
+        }
+    }    
+
     public void set99()
     {
         anim.SetInteger(controlParam, 99);
     }
+
     public void whenNotInUpdate()
     {
         Invoke("set99", 0.01f);              
@@ -499,5 +493,7 @@ public class JLife : MonoBehaviour {
     {
         anim.Stop();
     }
-    
+
+    #endregion PostJ
+
 }
