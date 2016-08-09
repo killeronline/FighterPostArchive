@@ -676,7 +676,7 @@ public class Begin
 
     }
 
-    #endregion Queuable Synaptics
+    #endregion
 
     #region Valuable Variables
 
@@ -1075,17 +1075,12 @@ public class Begin
         {
             foreach (KeyValuePair<int, Fighter> entry in allUnits)
             {
-                if (entry.Value.wid > 0)
-                {                 
-                    allScripts[entry.Value.id].whenNotInUpdate();
-
-                }
-                else//Towers
+                if (entry.Value.wid == 0)
                 {
                     ZCode.TowerH[entry.Value.pid] = entry.Value.health;
                     ZCode.TowerX[entry.Value.pid] = entry.Value.x;
                     ZCode.TowerY[entry.Value.pid] = entry.Value.y;
-                }
+                }               
             }
         }
 
@@ -1130,8 +1125,7 @@ public class Begin
                                 allScripts[vid].showHealthBar(new int[] { thevinens2, allUnits[vid].maxHealth });
                                 if ((allUnits[vid].mode != 1) && thevinens2 < 1)//stable unit
                                 {
-                                    allScripts[vid].Die(0);
-                                    allScripts[vid].whenNotInUpdate();
+                                    allScripts[vid].Die(0);                                    
                                 }                                
                             }
                         }
@@ -1317,8 +1311,7 @@ public class Begin
                 grid[allUnits[deadUnitID].x, allUnits[deadUnitID].y, 1] = 0;// Freeing grid space
                 if (allUnits[deadUnitID].wid > 0)
                 {                    
-                    allScripts[deadUnitID].Die(1);                    
-                    allScripts[deadUnitID].whenNotInUpdate();
+                    allScripts[deadUnitID].Die(1);                                        
                 }                
                 if (allUnits[deadUnitID].wid == 0)
                 {

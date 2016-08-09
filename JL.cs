@@ -63,7 +63,8 @@ public class JLife : MonoBehaviour
         do_once = true;
         height = 1.85f;        
         anim = this.GetComponent<Animator>();
-        anim.SetInteger( controlParam , 01); // 01 is the idle-1
+        anim.SetInteger( controlParam , (0*10)+1); // 01 is the idle-1
+        whenNotInUpdate();
         if (!isOnHomeScreen)
         {
             RoundRings.SetActive(true);
@@ -132,13 +133,7 @@ public class JLife : MonoBehaviour
                 postMode = miniTypes[mode];
             }
             anim.SetInteger(controlParam, (mode * 10) + postMode);
-            /*
-            if ( ina2 == 1 )// full death
-            {
-                InvokeRepeating("deathDecaying", 1f, 1f);
-            }
-            */
-            //showHealthBar( new int[] { -1,-1});// To remove the health bar            
+            whenNotInUpdate();                       
         }
         if (ina2 == 1)// full death
         {
@@ -276,19 +271,20 @@ public class JLife : MonoBehaviour
         else
         {
             modeImplement(1);//Immediately Implementing Mode
-        }
-        whenNotInUpdate();
+        }        
     }
 
     public void modeImplement( int _skip )
     {
         if (is_alive)
         {
+            #region DefaultActions
+
             if ( _wid == 1 )// only for shielded units later swordsmen
             {
                 if ( _isTakingArrowDamage == 1 )
                 {
-                    anim.SetInteger(controlParam, 4 );//0+4 for idle guard action
+                    anim.SetInteger(controlParam, 4 );//0+4 for idle guard action  
                     whenNotInUpdate();
                     _isTakingArrowDamage = 0;
                     return;
@@ -323,55 +319,35 @@ public class JLife : MonoBehaviour
                 //should move but cannot move
                 mode = 0;// may be this is the ghost movement like object moving but legs straight
                 // in skip:0 and countUp%3:1 i think i debugged the idle mode circle , check in new update
+                // check with a print statement if this case is coming after aug9
             }            
             
             int postMode = Random.Range(1, miniTypes[mode] + 1);
             if (postMode > miniTypes[mode])
             {
                 postMode = miniTypes[mode];
-            }
-            bool natural = false; // Will make it true after testing 
-            if (mode == 0 && Random.Range(1, 10) < 9 && natural) // natural false is ok for now
-            {
-                postMode = 1; // try to be in 01 idle mode for 90%                 
-            }
-            // Need to process horse movement differently
-            //if ( mode == 1 && (_nx == -1 || _ny == -1 ) )      
-            // Skipping dead animation here because showhealthbar will trigger the death                                                  
-            //if ( _skip == 0 && (mode == 0 || mode == 3))// 3 cycle animations
+            }                        
+
+            #endregion
+
+            #region Decision Anims
+
             if ( _skip == 0 )
-            {
-                if ( mode == 0 )
-                {
-                    countUp++;
-                    if (countUp%3==1)
-                    {
-                        anim.SetInteger(controlParam, (mode * 10) + postMode);
-                        countUp = 1;// 4 Mod 3 Equivalent
-                    }
-                }              
-                else
-                {
-                    anim.SetInteger(controlParam, (mode * 10) + postMode);
-                    countUp = 0;
-                }
+            {      
                 adjustedAttackSeperation = false ;
             }
             else
             {                                
                 if ( mode == 0 )
-                {
-                    if (countUp == 0)
-                    {
-                        suddenModelHalt();
-                    }
-                    // if countUp>0 means we are into mode0 to mode0 which needs no change in animation
+                {                    
+                    suddenModelHalt();                                        
                 }
                 else
                 {
                     anim.SetInteger(controlParam, (mode * 10) + postMode);
-                    countUp = 0;
-                }
+                    whenNotInUpdate();
+                    sudIdleCounter = 0;
+                }                
 
                 if ( mode == 2 && !adjustedAttackSeperation)
                 {// for archer ..write for diff units basing on seperation dist
@@ -386,7 +362,9 @@ public class JLife : MonoBehaviour
                         adjustedAttackSeperation = true;
                     }
                 }
-            }                                                  
+            }
+
+            #endregion
         }
     }
 
@@ -458,10 +436,10 @@ public class JLife : MonoBehaviour
         sudIdleCounter++;
         if (sudIdleCounter%3==1)
         {
-            anim.SetInteger(controlParam, (0 * 10) + 1);//01  
+            anim.SetInteger(controlParam, (0 * 10) + 1);//01              
+            whenNotInUpdate();
             sudIdleCounter = 1; //Similar to 4Mod3 logic modImp skip:0 mode:0 case
-        }
-        whenNotInUpdate();
+        }        
     }
 
     public void ManageSelectionRings()
