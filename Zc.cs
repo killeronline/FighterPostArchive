@@ -9,8 +9,8 @@ public class ZCode : MonoBehaviour
 
     // Audio Manager
     public GameObject soundManagerObject;
-    public static SSound MusicPlayer ;
-    public static bool isAudioAllowed ;
+    public static SSound MusicPlayer;
+    public static bool isAudioAllowed;
 
     // Blood Engine
     public GameObject SpillEngine;
@@ -18,25 +18,25 @@ public class ZCode : MonoBehaviour
     public static bool BloodToggle;
 
     // Later changed by server
-    public static int ZNOP ;
-    public static int ZPID ;
-    public static int ZTID ;
-    public static int ZCOINS ;
-    public static int ZAIGEMS ;
+    public static int ZNOP;
+    public static int ZPID;
+    public static int ZTID;
+    public static int ZCOINS;
+    public static int ZAIGEMS;
     public static int ZGTIME;
     public static int ZMINUTES;
     public static int ZMAXGROUP;
-    public static int ZTUNITS ;
-    public static int[] ZUnitCosts; 
-    public static int[] ZDECK ;
+    public static int ZTUNITS;
+    public static int[] ZUnitCosts;
+    public static int[] ZDECK;
     public static int[] ZHealths;
     public static int[] ZMaxHealths;
     public static string[] ZPLayerNames;
     public static bool ZDepButtonToggle;
     public static int ZAlive;
     public static int ZAIUnits;
-    public static int ZFPS;    
-    public static int ZSelectedGID;    
+    public static int ZFPS;
+    public static int ZSelectedGID;
     public static bool isGameOver;
     public static bool isAIdefeated;
     public static bool isTimeUp;
@@ -49,7 +49,7 @@ public class ZCode : MonoBehaviour
     public static int[] TowerH;
     public static int[] TowerX;
     public static int[] TowerY;
-    public static bool isDrummedByAI;    
+    public static bool isDrummedByAI;
 
     public static int GPG_GTIME;
     public static int GPG_UL;
@@ -57,7 +57,7 @@ public class ZCode : MonoBehaviour
     #endregion preZC
 
     public void BattleSetter()
-    {                
+    {
         isGameOver = false;
         isAIdefeated = false;
         isTimeUp = false;
@@ -69,21 +69,21 @@ public class ZCode : MonoBehaviour
         ZHealths = new int[5];
         ZMaxHealths = new int[5];
         ZPLayerNames = new string[5];
-        for ( int j = 0; j < 5; j++)
+        for (int j = 0; j < 5; j++)
         {
             ZHealths[j] = -9999;
             ZMaxHealths[j] = -9999;
-            ZPLayerNames[j] = "Player "+j ;
+            ZPLayerNames[j] = "Player " + j;
         }
-        if ( XStatics.NOP <= 1 )
+        if (XStatics.NOP <= 1)
         {
             ZPLayerNames[1] = "Romans";
             ZPLayerNames[2] = "Carthaginians";
         }
-        ZSelectedGID = -1; 
+        ZSelectedGID = -1;
         // Here very important is get the Player stats like country , Tgames , Twins , Tlosses , Tscore
         // Xstatics is all the global storage
-        ZNOP = XStatics.NOP ;
+        ZNOP = XStatics.NOP;
         ZPID = 1;
         ZTID = 1;
         ZCOINS = 1;
@@ -95,8 +95,8 @@ public class ZCode : MonoBehaviour
         ZDepButtonToggle = false;
         ZAlive = 0;
         ZUnitCosts = new int[ZTUNITS + 1];
-        ZDECK = new int[ZTUNITS+1];
-        for ( int i = 0; i < ZTUNITS+1; i++)
+        ZDECK = new int[ZTUNITS + 1];
+        for (int i = 0; i < ZTUNITS + 1; i++)
         {
             ZUnitCosts[i] = 0;
             ZDECK[i] = 0;
@@ -107,9 +107,9 @@ public class ZCode : MonoBehaviour
         ZUnitCosts[3] = 5;
         // ZUC Values       
         int L3 = ZNOP <= 1 ? 3 : ZNOP + 1;
-        ZCurrentUnitCount = new int[ L3, ZTUNITS + 1];//4+1 players x 3+1 diff units WorstCase
-        ZTotalUnitCount = new int[ L3, ZTUNITS + 1];
-        ZMaxUnitCount = new int[ L3, ZTUNITS + 1];
+        ZCurrentUnitCount = new int[L3, ZTUNITS + 1];//4+1 players x 3+1 diff units WorstCase
+        ZTotalUnitCount = new int[L3, ZTUNITS + 1];
+        ZMaxUnitCount = new int[L3, ZTUNITS + 1];
         TowerH = new int[L3];
         TowerX = new int[L3];
         TowerY = new int[L3];
@@ -118,15 +118,15 @@ public class ZCode : MonoBehaviour
 
     #region postZC
 
-    public void SendMessage2GUI( string msg2 )
+    public void SendMessage2GUI(string msg2)
     {
         guiCBScriptHolder.GetComponent<CbScript>().msgShow(msg2);
     }
 
     public GameObject guiCBScriptHolder;
-    public Color[] castleColorsBase ;
+    public Color[] castleColorsBase;
     public GameObject CameraForZoomObject;
-    public Transform Ring ;
+    public Transform Ring;
     public GameObject RingAnimo;
     public GameObject TorusMesh;
     public Transform DestRing;
@@ -136,21 +136,21 @@ public class ZCode : MonoBehaviour
     public Color selectColor;
     public Color moveColor;
     private float distBtwTroops = 3.001f;// This must be same as in spacing units in JLife
-    
+
     void EditorPause()
     {
         Debug.Break();
     }
 
-    public static float ForVBloodDist; 
-    
-    public static void BGMusicAdjustment( bool bgMusicOption )
+    public static float ForVBloodDist;
+
+    public static void BGMusicAdjustment(bool bgMusicOption)
     {
         try
         {
             MusicPlayer.BGMusicBool(bgMusicOption);
         }
-        catch ( Exception e )
+        catch (Exception e)
         {
             Console.WriteLine("Error Triggering the BG Music");
         }
@@ -160,23 +160,23 @@ public class ZCode : MonoBehaviour
     void Awake()
     {
         QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 40 ;//TargetFPS
+        Application.targetFrameRate = 40;//TargetFPS
         isAudioAllowed = true;
-        MusicPlayer = soundManagerObject.gameObject.GetComponent<SSound>();        
+        MusicPlayer = soundManagerObject.gameObject.GetComponent<SSound>();
         SpillScript = SpillEngine.GetComponent<Vblood>();
         ForVBloodDist = distBtwTroops;
         BattleSetter();// Server must do this with proper session settings , ie nop and all stuff ( like default coins start )
-        Invoke("adjustCamera",1f);        
+        Invoke("adjustCamera", 1f);
     }
 
     private int zoomCount = 0;
-    private BE.MobileRTSCam mRCam ;
+    private BE.MobileRTSCam mRCam;
 
     private void startCameraCinematically()
     {
         if (zoomCount < 40)// #Banga...requirement to see both towers
-        {            
-            float tZoom = 95f; 
+        {
+            float tZoom = 95f;
             float cZoom = mRCam.zoomCurrent;
             float mZoom = cZoom + ((tZoom - cZoom) / 8);
             mRCam.zoomCurrent = mZoom;
@@ -185,7 +185,7 @@ public class ZCode : MonoBehaviour
 
             zoomCount++;
             Invoke("startCameraCinematically", 0.1f);
-        }     
+        }
     }
 
     private void adjustCamera()
@@ -193,38 +193,39 @@ public class ZCode : MonoBehaviour
         try
         {
             mRCam = CameraForZoomObject.gameObject.GetComponent<BE.MobileRTSCam>();
-            mRCam.SetCameraZoom(mRCam.zoomCurrent);                
-            startCameraCinematically();            
+            mRCam.SetCameraZoom(mRCam.zoomCurrent);
+            startCameraCinematically();
         }
-        catch ( Exception e) {            
+        catch (Exception e)
+        {
             Invoke("adjustCamera", 1f);
         }
     }
 
-    void chooseSelectionColor( int _pid )
+    void chooseSelectionColor(int _pid)
     {
         attackColor = castleColorsBase[_pid];
         selectColor = castleColorsBase[_pid];
-        moveColor   = castleColorsBase[_pid];
+        moveColor = castleColorsBase[_pid];
     }
-    
-    void onClick( Vector3 clickPoint )
+
+    void onClick(Vector3 clickPoint)
     {
         float s2x = (clickPoint.x / (int)distBtwTroops);
         int sx = (int)s2x;
-        if ( s2x - (int)s2x > 0.51f) { sx++ ; }
+        if (s2x - (int)s2x > 0.51f) { sx++; }
 
         float s2y = (clickPoint.z / (int)distBtwTroops);
         int sy = (int)s2y;
-        if (s2y - (int)s2y > 0.51f) { sy++; }        
+        if (s2y - (int)s2y > 0.51f) { sy++; }
 
         //sy = ((int)clickPoint.z / (int)distBtwTroops) ;        
-        if ( b != null && !isGameOver )
+        if (b != null && !isGameOver)
         {
             string log7;
             int n32x;
-            int n32y;            
-            b.command(sx,sy,out log7,out n32x,out n32y);
+            int n32y;
+            b.command(sx, sy, out log7, out n32x, out n32y);
             ZCode.ZSelectedGID = b.selectedGid;// Change color of selection for 1 second
             Ring.position = new Vector3(10f, -99f, 10f);
             DestRing.position = new Vector3(10f, -99f, 10f);
@@ -232,11 +233,11 @@ public class ZCode : MonoBehaviour
             float ringposZ = sy * distBtwTroops;//yz relation
             if (log7.Equals("select"))
             {
-                if (n32x > 0 || n32y>0)//Human Ergo
+                if (n32x > 0 || n32y > 0)//Human Ergo
                 {
-                    n32y += 1 ; // SpawnRings                   
+                    n32y += 1; // SpawnRings                   
                     ringposX = n32x * distBtwTroops;
-                    ringposZ = n32y * distBtwTroops;                                        
+                    ringposZ = n32y * distBtwTroops;
                 }
                 foreach (KeyValuePair<int, JLife> escript in b.allScripts)
                 {
@@ -246,10 +247,10 @@ public class ZCode : MonoBehaviour
                 //TorusMesh.GetComponent<SkinnedMeshRenderer>().material.color = selectColor;
                 //RingAnimo.SendMessage("triggerRingAction",SendMessageOptions.DontRequireReceiver);
             }
-            else if( log7.Equals("hamla"))
+            else if (log7.Equals("hamla"))
             {
                 if (n32x > 0 || n32y > 0)
-                {                                     
+                {
                     ringposX = n32x * distBtwTroops;
                     ringposZ = n32y * distBtwTroops;
                 }
@@ -257,7 +258,7 @@ public class ZCode : MonoBehaviour
                 TorusMesh2.GetComponent<SkinnedMeshRenderer>().material.color = attackColor;
                 DestAnimo.SendMessage("triggerRingAction", SendMessageOptions.DontRequireReceiver);
             }
-            else if( log7.Equals("move"))
+            else if (log7.Equals("move"))
             {
                 DestRing.position = new Vector3(ringposX, 0.2f, ringposZ);
                 TorusMesh2.GetComponent<SkinnedMeshRenderer>().material.color = moveColor;
@@ -266,7 +267,7 @@ public class ZCode : MonoBehaviour
             else
             {
                 //print(log7);
-            }            
+            }
             RingAnimo.SendMessage("postRingAction", SendMessageOptions.DontRequireReceiver);
             DestAnimo.SendMessage("postRingAction", SendMessageOptions.DontRequireReceiver);
         }
@@ -276,42 +277,43 @@ public class ZCode : MonoBehaviour
     {
         DestRing.position = new Vector3(10f, -99f, 10f);
     }
-    
-    public Transform arrowModelBase;
-    public Transform[] Models ;
-    public Begin b ;
 
-	void Start()
-    {        
-        b = new Begin( this , distBtwTroops , castleColorsBase);
+    public Transform arrowModelBase;
+    public Transform[] Models;
+    public Begin b;
+
+    void Start()
+    {
+        b = new Begin(this, distBtwTroops, castleColorsBase);
         ZFPS = b.maxFps;
         ZROOT2 = (float)System.Math.Sqrt(2);
         foreach (KeyValuePair<int, Fighter> entry in b.allUnits)
         {
-            entry.Value.gid = (entry.Value.pid * 100) + entry.Value.wid;                
+            entry.Value.gid = (entry.Value.pid * 100) + entry.Value.wid;
             // Assigning GIDs
-        }        
-        Invoke("GameSpine", 1f / b.maxFps );        
+        }
+        Invoke("GameSpine", 1f / b.maxFps);
     }
-            	
-	void GameSpine () {        
+
+    void GameSpine()
+    {
         b.UpdateCycle();
-        if ( b.gtime < ( ZCode.ZMINUTES * 60 ))
+        if (b.gtime < (ZCode.ZMINUTES * 60))
         {
-            if ( isJudgeMentDone )
+            if (isJudgeMentDone)
             {
                 idleAllUnits();
             }
             else
             {
                 Invoke("GameSpine", 1f / b.maxFps);
-            }            
+            }
         }
         else
         {
-            idleAllUnits();              
+            idleAllUnits();
             isTimeUp = true;
-        }        
+        }
     }
 
     void idleAllUnits()
@@ -327,9 +329,9 @@ public class ZCode : MonoBehaviour
         }
     }
 
-    public void logThisText( string text )
+    public void logThisText(string text)
     {
-        print( text );
+        print(text);
     }
 
     #endregion postZC
@@ -341,10 +343,10 @@ public class Begin
 {
     #region preB
 
-    public int NOP ;
-    public int PID ;
-    public int TID ;
-    public int COINS ;
+    public int NOP;
+    public int PID;
+    public int TID;
+    public int COINS;
     public int selectedGid = -1;
     public ZCode baseScript;
     public Transform arrowModel;
@@ -562,7 +564,7 @@ public class Begin
 
     #region Queuable Synaptics
 
-    public int SpawnFunction( int _pid , int[] ddeck , int _sx , int _sy )
+    public int SpawnFunction(int _pid, int[] ddeck, int _sx, int _sy)
     {
 
         //Logger( "Pid:"+_pid+ ":" + ddeck[1]+","+ ddeck[2] + "," + ddeck[3] + ",("+_sx+","+_sy+")");
@@ -571,7 +573,7 @@ public class Begin
         for (int aftPriority = 1; aftPriority < ddeck.Length; aftPriority++)
         {
             int aft = PriorityOfUnits[aftPriority];
-            if ( ddeck[aft] > 0)
+            if (ddeck[aft] > 0)
             {
                 int dir = 0;
                 int i = 0;
@@ -626,14 +628,14 @@ public class Begin
                     {
                         if (grid[_qx, _qy, 0] == 0)
                         {
-                            grid[_qx, _qy, 0] = Test_generateid( _pid );//_pid
-                            Test_addFighter(grid[_qx, _qy, 0], aft, _pid , _qx, _qy);                            
+                            grid[_qx, _qy, 0] = Test_generateid(_pid);//_pid
+                            Test_addFighter(grid[_qx, _qy, 0], aft, _pid, _qx, _qy);
                             if (FirstID < 0)
                             {
                                 FirstID = grid[_qx, _qy, 0];
                             }
                             allUnits[grid[_qx, _qy, 0]].gid = FirstID;
-                            if (XStatics.NOP <= 1 && _pid == 1 )// Single Player Mode
+                            if (XStatics.NOP <= 1 && _pid == 1)// Single Player Mode
                             {
                                 ZCode.ZCOINS -= ZCode.ZUnitCosts[aft];
                                 COINS -= ZCode.ZUnitCosts[aft];// Hacker proof kosam
@@ -642,16 +644,16 @@ public class Begin
                         }
                     }
                 }
-            }            
+            }
         }
-        if ( _pid == PID )
+        if (_pid == PID)
         {
             //sfx.PlayOneClip( sfx.ResultFolder[3] , 0.2f );//SpawnMusic
-        }        
+        }
         return FirstID;// for Ergo deploy and attack
     }
-    
-    public void cMove( int _pidCurrent , int _targGID , int targX , int targY , int isAttack )
+
+    public void cMove(int _pidCurrent, int _targGID, int targX, int targY, int isAttack)
     {
         foreach (KeyValuePair<int, Fighter> entry in allUnits)
         {
@@ -666,12 +668,12 @@ public class Begin
                 {
                     entry.Value.is_GivenAtkOrdr = isAttack == 1 ? true : false;//AdvncdC#code
                 }
-                
+
             }
         }
-        if ( _pidCurrent == PID )        
+        if (_pidCurrent == PID)
         {
-            sfx.PlayLongClip(0,sfx.DrumsFolder[0], 0.3f );
+            sfx.PlayLongClip(0, sfx.DrumsFolder[0], 0.3f);
         }
 
     }
@@ -692,7 +694,7 @@ public class Begin
     public int[] playerUC;                           // Player Unit Counts  
     public int arrowFrameDelay;                      // update frequency of arrow objects
     public float distBtwTroops2;                     // passed form ZCode to maintain same distValue
-        
+
     #endregion
 
     #region Testing Data
@@ -748,20 +750,20 @@ public class Begin
 
         ZCode.ZTotalUnitCount[_pid, _wid]++;//Every Spawn is Counted Here
         // SPAWN        
-        int model_index = _wid ;
+        int model_index = _wid;
         if (_wid > 0)
         {
             allModels.Add(_id, GameObject.Instantiate(_models[model_index], new Vector3(-99f, -99f, -99f), Quaternion.identity) as Transform);
-            allScripts.Add( _id , allModels[_id].gameObject.GetComponent<JLife>() );
+            allScripts.Add(_id, allModels[_id].gameObject.GetComponent<JLife>());
             //Logger( allScripts.Count );
             //Debug.Break();
         }
         else
         {//Spawn Tower
-            allModels.Add(_id, GameObject.Instantiate(_models[model_index], new Vector3(_x*distBtwTroops2, 0f, _y*distBtwTroops2), Quaternion.identity) as Transform);
+            allModels.Add(_id, GameObject.Instantiate(_models[model_index], new Vector3(_x * distBtwTroops2, 0f, _y * distBtwTroops2), Quaternion.identity) as Transform);
             allModels[_id].Find("cage").GetComponent<Renderer>().material.color = castleColors[_pid];
         }
-        
+
 
     }
 
@@ -845,8 +847,8 @@ public class Begin
     public int lastClicked2;
     public int[,] ArtOfWar;
     public SSound sfx;
-    
-    public Begin( ZCode _client , float _distBtwTroops2 , Color[] _castleColors)
+
+    public Begin(ZCode _client, float _distBtwTroops2, Color[] _castleColors)
     {
         sfx = ZCode.MusicPlayer;
         ArtOfWar = new int[,]
@@ -854,10 +856,10 @@ public class Begin
             { 1, 1, 1, 1, 1, 1, 1},
      /* P */{ 1, 1, 2, 3, 0, 0, 0},
      /* A */{ 1, 2, 1, 1, 0, 0, 0},
-     /* C */{ 1, 1, 3, 1, 0, 0, 0},     
+     /* C */{ 1, 1, 3, 1, 0, 0, 0},
             { 1, 0, 0, 0, 0, 0, 0},
             { 1, 0, 0, 0, 0, 0, 0},
-            { 1, 0, 0, 0, 0, 0, 0}            
+            { 1, 0, 0, 0, 0, 0, 0}
         };
 
         NOP = ZCode.ZNOP;
@@ -871,18 +873,18 @@ public class Begin
         _models = _client.Models;
         arrowModel = _client.arrowModelBase;
         allModels = new SortedDictionary<int, UnityEngine.Transform>();
-        allScripts = new SortedDictionary<int, JLife >();
-        allProjectileModels = new SortedDictionary<int, UnityEngine.Transform>();        
-        _client.gameObject.SendMessage("chooseSelectionColor", PID , SendMessageOptions.DontRequireReceiver);
+        allScripts = new SortedDictionary<int, JLife>();
+        allProjectileModels = new SortedDictionary<int, UnityEngine.Transform>();
+        _client.gameObject.SendMessage("chooseSelectionColor", PID, SendMessageOptions.DontRequireReceiver);
         lastClicked2 = 0;
 
         gtime = 0;
         fps = 0;
         maxFps = 40;
-        fastFactor =  8 ;
-        #if UNITY_EDITOR
-            fastFactor = 8;// This is must for animation to sync in mobile
-        #endif
+        fastFactor = 8;
+#if UNITY_EDITOR
+        fastFactor = 8;// This is must for animation to sync in mobile
+#endif
         arrowFrameDelay = 10;
         // fastFactor is designed now to be 8 Per Sec
 
@@ -964,7 +966,7 @@ public class Begin
         ".............................." +
         ".............................." // Player 2 
         ;
-        if ( ZCode.ZNOP < 4 )
+        if (ZCode.ZNOP < 4)
         {
             board =
             ".............................." + // Player 1 
@@ -1000,7 +1002,7 @@ public class Begin
             ".............................." // Player 2 
             ;
         }
-        if ( XStatics.NOP <= 1 )// triggerAI
+        if (XStatics.NOP <= 1)// triggerAI
         {
             // I will do it in Update Cycle
         }
@@ -1009,32 +1011,32 @@ public class Begin
         Test_populategrid(board);
     }
 
-    #endregion      
-        
+    #endregion
+
     public void UpdateCycle()// This is the Master Update
-    {        
+    {
         #region Calc 1 
-        
+
         ZCode.ZAlive = 0;// we will count them to put constraint on max units
         ZCode.ZAIUnits = 0;
         foreach (KeyValuePair<int, Fighter> entry in allUnits)
         {
-            if ( XStatics.NOP <= 1 && entry.Value.pid == 1 )
+            if (XStatics.NOP <= 1 && entry.Value.pid == 1)
             {
                 if (ZCode.triggerAttack)
-                {                    
-                    if (entry.Value.wid % 2 != 0)                        
+                {
+                    if (entry.Value.wid % 2 != 0)
                     {
                         //Logger(entry.Value.id + " mode:" + entry.Value.mode + "ex:" +entry.Value.ex + "ey:" +entry.Value.ey );                        
-                        if (!entry.Value.is_marching || entry.Value.mode == 0 || ( entry.Value.mode == 1 && entry.Value.is_suddenHalt ))
-                        {                            
+                        if (!entry.Value.is_marching || entry.Value.mode == 0 || (entry.Value.mode == 1 && entry.Value.is_suddenHalt))
+                        {
                             entry.Value.ex = ZCode.TowerX[2];
-                            entry.Value.ey = ZCode.TowerY[2];                         
+                            entry.Value.ey = ZCode.TowerY[2];
                             entry.Value.is_marching = true;
                             //entry.Value.is_relocated = true;                        
                         }
 
-                    }                    
+                    }
                 }
                 else// Stay where you are for all units
                 {
@@ -1046,10 +1048,10 @@ public class Begin
                         entry.Value.egid = -1;
                         entry.Value.mode = 0;
                         entry.Value.is_marching = false;
-                    }                    
+                    }
                 }
             }
-            if (entry.Value.mode == 1 && (!entry.Value.is_suddenHalt) && entry.Value.wid>0)
+            if (entry.Value.mode == 1 && (!entry.Value.is_suddenHalt) && entry.Value.wid > 0)
             {
                 //(allModels[entry.Value.id].gameObject).SendMessage("movementFunction", SendMessageOptions.DontRequireReceiver);
                 allScripts[entry.Value.id].movementFunction();
@@ -1080,7 +1082,7 @@ public class Begin
                     ZCode.TowerH[entry.Value.pid] = entry.Value.health;
                     ZCode.TowerX[entry.Value.pid] = entry.Value.x;
                     ZCode.TowerY[entry.Value.pid] = entry.Value.y;
-                }               
+                }
             }
         }
 
@@ -1088,7 +1090,7 @@ public class Begin
 
         #region Calc 3 
 
-        if ( (fps-1) % (( maxFps * 8) / (fastFactor * arrowFrameDelay * 2 ) ) == 0 )// Testing 4
+        if ((fps - 1) % ((maxFps * 8) / (fastFactor * arrowFrameDelay * 2)) == 0)// Testing 4
         {
             // 0 1 2 = 7 11 15 pattern ...Arithmetic progression with diff = arrowFrameDelay                        
             foreach (KeyValuePair<int, Arrow> arw in allArrows)
@@ -1100,7 +1102,7 @@ public class Begin
                     aimTheArrow(allProjectileModels[aid], arw.Value.ax, arw.Value.ay, arw.Value.atX, arw.Value.atY, 0);
                     aimTheArrow(allModels[aid], arw.Value.ax, arw.Value.ay, arw.Value.atX, arw.Value.atY, arw.Value.id);
                     allProjectileModels[aid].Rotate(new Vector3(0f, 0f, 45f));//default up angle
-                    arw.Value.step++;                                        
+                    arw.Value.step++;
                     //allProjectileModels[aid].Find("Cube").GetComponent<SkinnedMeshRenderer>().material.color = castleColors[allUnits[aid].pid];
                 }
                 else if ((!arw.Value.is_useful) && allProjectileModels[aid].position.y < 1)// make it 1 at convinience
@@ -1115,18 +1117,18 @@ public class Begin
                         if (vid > 0 && allUnits.ContainsKey(vid))
                         {
                             if (allUnits[vid].wid > 0)// towers dont have health bars
-                            {                                                                
+                            {
                                 //allUnits[vid].hitCount[arw.Value.atype]++;                                
                                 //int[] tmpHitCountArray = allUnits[vid].hitCount;
                                 int thevinens2 = allUnits[vid].thealth;
-                                thevinens2 -= ( allArrows[aid].dmg * ArtOfWar[allArrows[aid].atype, allUnits[vid].wid]);
+                                thevinens2 -= (allArrows[aid].dmg * ArtOfWar[allArrows[aid].atype, allUnits[vid].wid]);
                                 allUnits[vid].thealth = thevinens2;
                                 allUnits[vid].is_takingArrowDamage = true;
                                 allScripts[vid].showHealthBar(new int[] { thevinens2, allUnits[vid].maxHealth });
                                 if ((allUnits[vid].mode != 1) && thevinens2 < 1)//stable unit
                                 {
-                                    allScripts[vid].Die(0);                                    
-                                }                                
+                                    allScripts[vid].Die(0);
+                                }
                             }
                         }
                     }
@@ -1135,7 +1137,7 @@ public class Begin
                 else
                 {
                     if (!arw.Value.is_useful)
-                    {                                                
+                    {
                         float climb = arw.Value.climb;
                         float fwd = arw.Value.fwd;//MEMORY
                         if (arw.Value.releaseTime > 0)
@@ -1168,7 +1170,7 @@ public class Begin
                             arw.Value.step++;
                         }
                     }
-                }                
+                }
             }
         }
 
@@ -1184,11 +1186,11 @@ public class Begin
 
             int L4 = ZCode.ZNOP <= 1 ? 3 : ZCode.ZNOP + 1;
 
-            for ( int i43 = 0; i43 < L4; i43++)
+            for (int i43 = 0; i43 < L4; i43++)
             {
                 for (int j43 = 0; j43 < ZCode.ZTUNITS + 1; j43++)
                 {
-                    ZCode.ZCurrentUnitCount[i43, j43] = 0 ;
+                    ZCode.ZCurrentUnitCount[i43, j43] = 0;
                 }
             }
 
@@ -1198,37 +1200,37 @@ public class Begin
 
             if (lastClicked2 > 10)
             {
-                baseScript.hideDestRing();                
+                baseScript.hideDestRing();
             }
 
-            if ( ! ZCode.isAudioAllowed )
+            if (!ZCode.isAudioAllowed)
             {
                 sfx.HaltMoreAudioSources();//For stopping all efx immediately                
             }
 
             List<int> deadArrows = new List<int>();// BIG TIME CHECK THIS AGAIN
 
-            if ( gtime % 2 == 0 )//June 5th MRNG AFTN BUG
+            if (gtime % 2 == 0)//June 5th MRNG AFTN BUG
             {
                 foreach (KeyValuePair<int, Arrow> arw in allArrows)//Rain of Arrows Here
-                {            
+                {
                     int ahead = arw.Value.neID;
-                    if( allUnits.ContainsKey(ahead) ) 
+                    if (allUnits.ContainsKey(ahead))
                     {
-                        allUnits[ahead].health -= ( arw.Value.dmg * ArtOfWar[arw.Value.atype, allUnits[ahead].wid] ) ;                
+                        allUnits[ahead].health -= (arw.Value.dmg * ArtOfWar[arw.Value.atype, allUnits[ahead].wid]);
                     }
-                    deadArrows.Add(arw.Key);                    
+                    deadArrows.Add(arw.Key);
                 }
             }
-            
+
             foreach (int deadAID in deadArrows)
             {
                 allArrows.Remove(deadAID);
                 GameObject.Destroy(allProjectileModels[deadAID].gameObject);
                 allProjectileModels.Remove(deadAID);
             }
-            
-            for ( int zhi = 0; zhi < ZCode.ZHealths.Length;zhi++)
+
+            for (int zhi = 0; zhi < ZCode.ZHealths.Length; zhi++)
             {
                 ZCode.ZHealths[zhi] = 0;
                 ZCode.ZMaxHealths[zhi] = 0;
@@ -1236,13 +1238,13 @@ public class Begin
 
             List<int> deadUnits = new List<int>();
             foreach (KeyValuePair<int, Fighter> entry in allUnits)
-            {                
-                if ( entry.Value.wid == 0 )//For Zhealths and MaxHealths for HUD
-                {                    
-                    if ( entry.Value.health > 1 )
+            {
+                if (entry.Value.wid == 0)//For Zhealths and MaxHealths for HUD
+                {
+                    if (entry.Value.health > 1)
                     {
                         ZCode.ZHealths[entry.Value.pid] = entry.Value.health;
-                        ZCode.ZMaxHealths[entry.Value.pid] = entry.Value.maxHealth;                        
+                        ZCode.ZMaxHealths[entry.Value.pid] = entry.Value.maxHealth;
                     }
                     else
                     {
@@ -1252,27 +1254,27 @@ public class Begin
                 if (entry.Value.health < 1)
                 {
                     deadUnits.Add(entry.Value.id); // Registering Casualities = Dead Units                                        
-                    if ( entry.Value.wid == 0 && entry.Value.pid == PID)
+                    if (entry.Value.wid == 0 && entry.Value.pid == PID)
                     {
                         ZCode.isGameOver = true;
                     }
-                    if ( entry.Value.wid == 0 && XStatics.NOP < 2 && entry.Value.pid != PID)
+                    if (entry.Value.wid == 0 && XStatics.NOP < 2 && entry.Value.pid != PID)
                     {
                         ZCode.isAIdefeated = true;
                     }
                 }
                 else
                 {
-                    ZCode.ZCurrentUnitCount[ entry.Value.pid, entry.Value.wid]++;
-                    if ( ZCode.ZMaxUnitCount[ entry.Value.pid, entry.Value.wid] < ZCode.ZCurrentUnitCount[entry.Value.pid , entry.Value.wid])
+                    ZCode.ZCurrentUnitCount[entry.Value.pid, entry.Value.wid]++;
+                    if (ZCode.ZMaxUnitCount[entry.Value.pid, entry.Value.wid] < ZCode.ZCurrentUnitCount[entry.Value.pid, entry.Value.wid])
                     {
-                        ZCode.ZMaxUnitCount[ entry.Value.pid , entry.Value.wid] = ZCode.ZCurrentUnitCount[entry.Value.pid , entry.Value.wid];
+                        ZCode.ZMaxUnitCount[entry.Value.pid, entry.Value.wid] = ZCode.ZCurrentUnitCount[entry.Value.pid, entry.Value.wid];
                     }
-                    entry.Value.is_processed = false;                    
+                    entry.Value.is_processed = false;
                     entry.Value.thealth = entry.Value.health;
                     grid[entry.Value.x, entry.Value.y, 1] = gtime + 1;
-                    if ( entry.Value.wid > 0)
-                    { 
+                    if (entry.Value.wid > 0)
+                    {
                         int[] _packet = new int[] {//COMMUNICATOR
                             entry.Value.wid,
                             entry.Value.pid,
@@ -1289,8 +1291,8 @@ public class Begin
                         // CRITICAL UPDATE 1                         
                         allScripts[entry.Value.id].ModeUpdate(_packet);
                         allUnits[entry.Value.id].is_takingArrowDamage = false;
-                        int ahead = entry.Value.id; 
-                        allScripts[ahead].showHealthBar( new int[] { 0,0});                        
+                        int ahead = entry.Value.id;
+                        allScripts[ahead].showHealthBar(new int[] { 0, 0 });
                     }
                     else
                     {
@@ -1299,20 +1301,20 @@ public class Begin
                 }
             }
 
-            ZCode.GPG_GTIME = gtime;            
+            ZCode.GPG_GTIME = gtime;
 
             foreach (int deadUnitID in deadUnits)
             {
-                if ( allUnits[deadUnitID].pid == PID )
+                if (allUnits[deadUnitID].pid == PID)
                 {
                     ZCode.GPG_UL += 1;//Registering Casuality
                 }
                 grid[allUnits[deadUnitID].x, allUnits[deadUnitID].y, 0] = 0;
                 grid[allUnits[deadUnitID].x, allUnits[deadUnitID].y, 1] = 0;// Freeing grid space
                 if (allUnits[deadUnitID].wid > 0)
-                {                    
-                    allScripts[deadUnitID].Die(1);                                        
-                }                
+                {
+                    allScripts[deadUnitID].Die(1);
+                }
                 if (allUnits[deadUnitID].wid == 0)
                 {
                     GameObject.Destroy(allModels[deadUnitID].gameObject);
@@ -1334,9 +1336,9 @@ public class Begin
             Dictionary<int, int> centroids_Z = new Dictionary<int, int>(); // _gid , _centeroid_ZCOR 
             Dictionary<int, int> IdleCounts = new Dictionary<int, int>();  // _gid , number of units belonging to gid
             Dictionary<int, int> ArchCounts = new Dictionary<int, int>();  // _gid , number of units belonging to gid
-            int tgid;            
+            int tgid;
             foreach (KeyValuePair<int, Fighter> entry in allUnits)
-            {                
+            {
                 tgid = entry.Value.gid;
                 if (counts.ContainsKey(tgid))
                 {
@@ -1350,11 +1352,11 @@ public class Begin
                     centroids_X.Add(tgid, entry.Value.x);
                     centroids_Y.Add(tgid, entry.Value.y);
                     //centroids_Z.Add( tgid , entry.Value.z ) ;
-                    counts.Add(tgid, 1);                    
-                }                
-                if ( entry.Value.mode == 0 || ( entry.Value.mode == 1 && entry.Value.is_suddenHalt ) )
+                    counts.Add(tgid, 1);
+                }
+                if (entry.Value.mode == 0 || (entry.Value.mode == 1 && entry.Value.is_suddenHalt))
                 {
-                    if ( IdleCounts.ContainsKey( tgid ) )
+                    if (IdleCounts.ContainsKey(tgid))
                     {
                         IdleCounts[tgid] = IdleCounts[tgid] + 1;
                     }
@@ -1365,14 +1367,14 @@ public class Begin
                 }
                 else
                 {
-                    if ( ! IdleCounts.ContainsKey(tgid) )
+                    if (!IdleCounts.ContainsKey(tgid))
                     {
                         IdleCounts.Add(tgid, 0);
-                    }                    
+                    }
                 }
-                if ( entry.Value.wid == 2 && entry.Value.pid == 1 )//Counting Player Archers
+                if (entry.Value.wid == 2 && entry.Value.pid == 1)//Counting Player Archers
                 {
-                    if ( ArchCounts.ContainsKey(tgid) )
+                    if (ArchCounts.ContainsKey(tgid))
                     {
                         ArchCounts[tgid] = ArchCounts[tgid] + 1;
                     }
@@ -1389,14 +1391,14 @@ public class Begin
                     }
                 }
             }
-                        
+
             foreach (KeyValuePair<int, int> ent in counts)
             {
                 int _gid = ent.Key;
                 centroids_X[_gid] = centroids_X[_gid] / counts[_gid]; // average
                 centroids_Y[_gid] = centroids_Y[_gid] / counts[_gid];
-            }            
-            
+            }
+
             int currentArrowCount = allArrows.Count;
             int up = 1;// Units Processed , Sentinel to Start = 1 , Later on up = 0 , up++ on processing a unit
 
@@ -1417,39 +1419,39 @@ public class Begin
                 foreach (KeyValuePair<int, Fighter> entry in allUnits) // Unit Processing
                 {
                     #region Regroup and Mode Decision
-                    
+
                     if (entry.Value.is_processed)
                     {
                         continue; // Skip the processed units 
                     }
                     // Regroup
-                    int cinnamonX = centroids_X[entry.Value.gid] ;
-                    int cinnamonY = (centroids_Y[entry.Value.gid]+entry.Value.y)/2 ;//This may keep line formations and awesome if works                                                            
-                    if ( (!entry.Value.is_marching) && ( IdleCounts[entry.Value.gid] == counts[entry.Value.gid] ))
+                    int cinnamonX = centroids_X[entry.Value.gid];
+                    int cinnamonY = (centroids_Y[entry.Value.gid] + entry.Value.y) / 2;//This may keep line formations and awesome if works                                                            
+                    if ((!entry.Value.is_marching) && (IdleCounts[entry.Value.gid] == counts[entry.Value.gid]))
                     {
                         int sdist2 = Int32.MaxValue;
                         bool is_homie = false;
-                        int cdist2;                        
+                        int cdist2;
                         int sr2x = 0;
                         int sr2y = 0;
                         int u2x = entry.Value.x;
                         int u2y = entry.Value.y;
                         int pdist2 = calculateDistanceSquare(u2x, u2y, cinnamonX, cinnamonY);
-                        int d2x , d2y ;      // I D L E - R E L O C A T I O N                  
-                        int[] duX = new int[] { -1 , 0 , 1 , -1 , 1 , -1 ,  0 ,  1 };
-                        int[] duY = new int[] {  1 , 1 , 1 ,  0 , 0 , -1 , -1 , -1 };
-                        for ( int isac = 0; isac < duX.Length; isac++)
+                        int d2x, d2y;      // I D L E - R E L O C A T I O N                  
+                        int[] duX = new int[] { -1, 0, 1, -1, 1, -1, 0, 1 };
+                        int[] duY = new int[] { 1, 1, 1, 0, 0, -1, -1, -1 };
+                        for (int isac = 0; isac < duX.Length; isac++)
                         {
                             d2x = u2x + duX[isac];
                             d2y = u2y + duY[isac];
-                            if ( d2x < 0 || d2x >= groundLength || d2y < 0 || d2y >= groundWidth )
+                            if (d2x < 0 || d2x >= groundLength || d2y < 0 || d2y >= groundWidth)
                             {
                                 continue;// Out of Bounds - for centering
                             }
-                            if (grid[d2x, d2y, 0]==0)//Empty
-                            { 
+                            if (grid[d2x, d2y, 0] == 0)//Empty
+                            {
                                 cdist2 = calculateDistanceSquare(d2x, d2y, cinnamonX, cinnamonY);
-                                if (  cdist2 < pdist2 && cdist2 < sdist2 )
+                                if (cdist2 < pdist2 && cdist2 < sdist2)
                                 {
                                     sdist2 = cdist2;
                                     sr2x = d2x;
@@ -1458,19 +1460,19 @@ public class Begin
                                 }
                             }
                         }
-                        if ( is_homie )
+                        if (is_homie)
                         {
                             entry.Value.ex = sr2x;
-                            entry.Value.ey = sr2y;                            
+                            entry.Value.ey = sr2y;
                         }
-                    }                    
+                    }
 
                     if (entry.Value.is_relocated)
-                    {                        
-                        int rtx = (centroids_X[entry.Value.gid] - entry.Value.x);                        
-                        int rty = (centroids_Y[entry.Value.gid] - entry.Value.y);                            
-                        if ( calculateDistanceSquare(entry.Value.x,entry.Value.y,entry.Value.ex-rtx, entry.Value.ey-rty) <
-                             calculateDistanceSquare(entry.Value.x, entry.Value.y, centroids_X[entry.Value.gid], centroids_Y[entry.Value.gid]) )                                                                                                                                
+                    {
+                        int rtx = (centroids_X[entry.Value.gid] - entry.Value.x);
+                        int rty = (centroids_Y[entry.Value.gid] - entry.Value.y);
+                        if (calculateDistanceSquare(entry.Value.x, entry.Value.y, entry.Value.ex - rtx, entry.Value.ey - rty) <
+                             calculateDistanceSquare(entry.Value.x, entry.Value.y, centroids_X[entry.Value.gid], centroids_Y[entry.Value.gid]))
                         {
                             entry.Value.ex -= rtx;
                             entry.Value.ey -= rty;
@@ -1491,13 +1493,13 @@ public class Begin
                         {
                             entry.Value.ey = groundWidth - 1;
                         }
-                        entry.Value.is_relocated = false;                        
+                        entry.Value.is_relocated = false;
                     }
 
                     //int k234 = ((int)Math.Sqrt(calculateDistanceSquare(entry.Value.x, entry.Value.y, centroids_X[entry.Value.gid], centroids_Y[entry.Value.gid])));
                     //if ( k234 > 6 )
-                    
-                    
+
+
                     if (entry.Value.eid > -1)
                     {
                         entry.Value.mode = 2; //attack animation triggered
@@ -1514,7 +1516,7 @@ public class Begin
                         }
                     }
                     else if (entry.Value.ex > -1 && entry.Value.ey > -1)
-                    {       
+                    {
                         // unit is assigned to move to ex , ey , ez                        
                         if (entry.Value.ex == entry.Value.x && entry.Value.ey == entry.Value.y)
                         {
@@ -1523,7 +1525,7 @@ public class Begin
                         else
                         {
                             entry.Value.mode = 1;
-                        }                                                                        
+                        }
                     }
                     else if (entry.Value.egid > -1)
                     {
@@ -1532,11 +1534,11 @@ public class Begin
                             entry.Value.mode = 1; // walk to ex , ey , ez 
                             entry.Value.ex = centroids_X[entry.Value.egid] - (centroids_X[entry.Value.gid] - entry.Value.x);
                             entry.Value.ey = centroids_Y[entry.Value.egid] - (centroids_Y[entry.Value.gid] - entry.Value.y);
-                            if ( entry.Value.ex < 0 )
+                            if (entry.Value.ex < 0)
                             {
                                 entry.Value.ex = 0;
                             }
-                            if (entry.Value.ex >= groundLength )
+                            if (entry.Value.ex >= groundLength)
                             {
                                 entry.Value.ex = groundLength - 1;
                             }
@@ -1544,15 +1546,15 @@ public class Begin
                             {
                                 entry.Value.ey = 0;
                             }
-                            if (entry.Value.ey >= groundWidth )
+                            if (entry.Value.ey >= groundWidth)
                             {
                                 entry.Value.ey = groundWidth - 1;
-                            }                            
+                            }
                         }
                         else
                         {
                             entry.Value.egid = -1; // REVOLUTIONARY @9may 11:56
-                            entry.Value.mode = 0 ; // Enemy GID Killed
+                            entry.Value.mode = 0; // Enemy GID Killed
                         }
                     }
                     else
@@ -1562,12 +1564,12 @@ public class Begin
 
 
 
-                    if ( (entry.Value.mode == 0 || entry.Value.is_suddenHalt)
-                        && ( entry.Value.wid%2!=0 || ( entry.Value.wid%2==0 && (!allArrows.ContainsKey(entry.Value.id)) && currentArrowCount == 0 ))
+                    if ((entry.Value.mode == 0 || entry.Value.is_suddenHalt)
+                        && (entry.Value.wid % 2 != 0 || (entry.Value.wid % 2 == 0 && (!allArrows.ContainsKey(entry.Value.id)) && currentArrowCount == 0))
                         // 26May2016 the archer sync update
                         // To make sure we are not scouting if arrow is released
                         )// In Case Regrouping changes their mode to 1 
-                    {                        
+                    {
                         int ax, ay; // Archer X , Y
                         int wx, wy; // Watch X , Y
                         ax = entry.Value.x;
@@ -1645,7 +1647,7 @@ public class Begin
                                 if (grid[wx, wy, 1] >= gtime && allUnits.ContainsKey(grid[wx, wy, 0]) && allUnits[grid[wx, wy, 0]].tid != entry.Value.tid)
                                 {
                                     int edist = calculateDistanceSquare(ax, ay, wx, wy);
-                                    if ( edist>3 && edist < nearest_distance && allUnits[grid[wx, wy, 0]].thealth > 0)// Health condition to avoid over kill
+                                    if (edist > 3 && edist < nearest_distance && allUnits[grid[wx, wy, 0]].thealth > 0)// Health condition to avoid over kill
                                     {
                                         // Edist > 3 assumes second ring and neglect first ring arrows and scouts
                                         nearest_distance = edist;
@@ -1661,25 +1663,25 @@ public class Begin
                         {
                             if (entry.Value.wid % 2 == 0) // Ranged Units
                             {
-                                if ( !allArrows.ContainsKey(entry.Value.id) && gtime%2==0 )// Check if i already had an arrow registered on my id
-                                {                                                                        
+                                if (!allArrows.ContainsKey(entry.Value.id) && gtime % 2 == 0)// Check if i already had an arrow registered on my id
+                                {
                                     // new Arrow ( _id , _eid , _dmg )
                                     // PROJSEC = PROJECTILE SECTION (For Find)
                                     entry.Value.mode = 6;
                                     // Dynamic Arrow
                                     Arrow arw;
                                     bool reroute_decision = false;
-                                    if (allUnits[nearest_enemy].mode == 1 )
+                                    if (allUnits[nearest_enemy].mode == 1)
                                     {
-                                        reroute_decision = true;                                    
+                                        reroute_decision = true;
                                     }
-                                    arw = new Arrow(entry.Value.wid, entry.Value.id , entry.Value.pid , 2 * entry.Value.attack, entry.Value.x, entry.Value.y, allUnits[nearest_enemy].x, allUnits[nearest_enemy].y, arrowFrameDelay, reroute_decision , nearest_enemy);// true for dynamic routing
+                                    arw = new Arrow(entry.Value.wid, entry.Value.id, entry.Value.pid, 2 * entry.Value.attack, entry.Value.x, entry.Value.y, allUnits[nearest_enemy].x, allUnits[nearest_enemy].y, arrowFrameDelay, reroute_decision, nearest_enemy);// true for dynamic routing
 
                                     allArrows.Add(entry.Value.id, arw);
                                     // double damage
-                                    allUnits[nearest_enemy].thealth -= ( 2 * entry.Value.attack * ArtOfWar[entry.Value.wid, allUnits[nearest_enemy].wid] );
+                                    allUnits[nearest_enemy].thealth -= (2 * entry.Value.attack * ArtOfWar[entry.Value.wid, allUnits[nearest_enemy].wid]);
                                     //allUnits[entryValue.eid].health -= ( entryValue.attack * ArtOfWar[ entryValue.wid , allUnits[entryValue.eid].wid] );
-                                    allProjectileModels.Add(entry.Value.id, GameObject.Instantiate(arrowModel, new Vector3(-99f, -99f, -99f), Quaternion.identity) as Transform);                                                                 
+                                    allProjectileModels.Add(entry.Value.id, GameObject.Instantiate(arrowModel, new Vector3(-99f, -99f, -99f), Quaternion.identity) as Transform);
                                     //Console.WriteLine("Arrow Released from id:{2} onto:({0},{1})", allUnits[nearest_enemy].x, allUnits[nearest_enemy].y, entry.Value.id);                                                                       
                                 }
                             }
@@ -1713,8 +1715,8 @@ public class Begin
                     ux = entry.Value.x;
                     uy = entry.Value.y;
                     dx = -1; dy = -1;//    N   S  NW  SE  NE  SW   W   E       Below are horse movables
-                    int[] DX = new int[] { 1, -1,  1, -1,  1, -1,  0,  0,      -1, 0, 1, -2, 2, -2, 2, -2, 2, -1, 0, 1 };
-                    int[] DY = new int[] { 0,  0,  1, -1, -1,  1,  1, -1,       2, 2, 2, 1, 1, 0, 0, -1, -1, -2, -2, -2 };
+                    int[] DX = new int[] { 1, -1, 1, -1, 1, -1, 0, 0, -1, 0, 1, -2, 2, -2, 2, -2, 2, -1, 0, 1 };
+                    int[] DY = new int[] { 0, 0, 1, -1, -1, 1, 1, -1, 2, 2, 2, 1, 1, 0, 0, -1, -1, -2, -2, -2 };
                     //int[] DX = new int[] { -1, 0, 1, -1, 1, -1, 0, 1,   -1, 0, 1, -2, 2, -2, 2, -2, 2, -1, 0, 1 };
                     //int[] DY = new int[] { 1, 1, 1, 0, 0, -1, -1, -1,    2, 2, 2, 1, 1, 0, 0, -1, -1, -2, -2, -2 };
 
@@ -1750,7 +1752,7 @@ public class Begin
                                 if (entry.Value.mode == 1)
                                 {
                                     int distance = calculateDistanceSquare(dx, dy, entry.Value.ex, entry.Value.ey);
-                                    if (distance < current_distance) 
+                                    if (distance < current_distance)
                                     {
                                         free_squares++;
                                         if (distance < shortest_distance)
@@ -1770,15 +1772,15 @@ public class Begin
                         }
                     }
 
-                    if ( entry.Value.wid%2==0 && entry.Value.is_GivenAtkOrdr )
+                    if (entry.Value.wid % 2 == 0 && entry.Value.is_GivenAtkOrdr)
                     {
-                        int reachDistance = calculateDistanceSquare( entry.Value.x , entry.Value.y , entry.Value.ex, entry.Value.ey);
-                        if ( reachDistance < (entry.Value.range*entry.Value.range) )
+                        int reachDistance = calculateDistanceSquare(entry.Value.x, entry.Value.y, entry.Value.ex, entry.Value.ey);
+                        if (reachDistance < (entry.Value.range * entry.Value.range))
                         {
                             entry.Value.ex = entry.Value.x;
                             entry.Value.ey = entry.Value.y;// Making the destiny reached
                             entry.Value.is_GivenAtkOrdr = false;
-                        }                        
+                        }
                     }
                     entry.Value.should_move = can_move;
                     entry.Value.nx = shortest_x;
@@ -1845,7 +1847,7 @@ public class Begin
                                         entryValue.wid,
                                         entryValue.pid,
                                         entryValue.tid,
-                                        entryValue.mode,   
+                                        entryValue.mode,
                                         entryValue.x,
                                         entryValue.y,
                                         entryValue.nx,
@@ -1880,7 +1882,7 @@ public class Begin
                                 //entryValue.nx = entryValue.x;
                                 //entryValue.ny = entryValue.y;                                                                
                                 entryValue.is_suddenHalt = true;
-                            }                           
+                            }
                         }
 
                         // Attack
@@ -1890,8 +1892,8 @@ public class Begin
                             {
                                 allUnits[entryValue.eid].health -= (entryValue.attack * ArtOfWar[entryValue.wid, allUnits[entryValue.eid].wid]);
                                 //SPILLING BLOOD
-                                if (allUnits[entryValue.eid].wid > 0 )//Spill Blood only for Units
-                                { 
+                                if (allUnits[entryValue.eid].wid > 0)//Spill Blood only for Units
+                                {
                                     ZCode.SpillScript.deployBlood(allUnits[entryValue.eid].x, allUnits[entryValue.eid].y);
                                 }
                                 //sfx.RandomizeSfx(sfx.SwordFolder , 0.06f );
@@ -1900,7 +1902,7 @@ public class Begin
                                 if (allUnits[ahead].wid > 0)
                                 {
                                     //allModels[ahead].SendMessage("showHealthBar", new int[] { allUnits[ahead].health, allUnits[ahead].maxHealth }, SendMessageOptions.DontRequireReceiver);
-                                    allScripts[ahead].showHealthBar(new int[] { allUnits[ahead].health, allUnits[ahead].maxHealth } );                                    
+                                    allScripts[ahead].showHealthBar(new int[] { allUnits[ahead].health, allUnits[ahead].maxHealth });
                                 }
 
                                 int[] _packet3 = new int[] {//COMMUNICATOR
@@ -1911,7 +1913,7 @@ public class Begin
                                         entryValue.x,
                                         entryValue.y,
                                         allUnits[entryValue.eid].x ,
-                                        allUnits[entryValue.eid].y ,                                        
+                                        allUnits[entryValue.eid].y ,
                                         3
                                     };
                                 // CRITICAL UPDATE 3                                 
@@ -1941,38 +1943,38 @@ public class Begin
             #region Sound Plan
 
             foreach (KeyValuePair<int, Fighter> entry in allUnits) // Unit Processing
-            {                
-                if ( ! entry.Value.is_processed)// these are in mode=1 but unable to move
+            {
+                if (!entry.Value.is_processed)// these are in mode=1 but unable to move
                 {
-                    allScripts[entry.Value.id].suddenModelHalt();
+                    allScripts[entry.Value.id].suddenModelHalt(1);
                 }
             }
 
             int maxModes = 10;
-            int[,] audioHelpArray = new int[ZCode.ZTUNITS+1,maxModes];//Assuming 10 modes at max
+            int[,] audioHelpArray = new int[ZCode.ZTUNITS + 1, maxModes];//Assuming 10 modes at max
             foreach (KeyValuePair<int, Fighter> entry in allUnits)
             {
                 entry.Value.thealth = entry.Value.health;
-                if ( entry.Value.pid == PID && (!entry.Value.is_suddenHalt) )
+                if (entry.Value.pid == PID && (!entry.Value.is_suddenHalt))
                 {
-                    audioHelpArray[entry.Value.wid,entry.Value.mode]++;
+                    audioHelpArray[entry.Value.wid, entry.Value.mode]++;
                 }
             }
             // cavalry march
             // soldier march
             // attack
-            int mode2Count  = 0;
+            int mode2Count = 0;
             int cavalryMarch = 0;
             int soldierMarch = 0;
-            for ( int aut = 0; aut < ZCode.ZTUNITS+1; aut++)
+            for (int aut = 0; aut < ZCode.ZTUNITS + 1; aut++)
             {
-                for ( int am = 0; am<maxModes;am++)
+                for (int am = 0; am < maxModes; am++)
                 {
-                    if ( am == 2 )
+                    if (am == 2)
                     {
                         mode2Count += audioHelpArray[aut, am];
                     }
-                    if ( am == 1 )
+                    if (am == 1)
                     {
                         if (aut == 1 || aut == 2)
                         {
@@ -1984,27 +1986,27 @@ public class Begin
                         }
                     }
                 }
-            }            
-            if ( mode2Count > 2)
+            }
+            if (mode2Count > 2)
             {
-                sfx.PlayLongClip(2,sfx.AttackFolder[0] , 0.5f);
+                sfx.PlayLongClip(2, sfx.AttackFolder[0], 0.5f);
             }
             if (cavalryMarch > 2)
             {
-                sfx.PlayLongClip(3,sfx.CavalryFolder[0] , 0.5f);
+                sfx.PlayLongClip(3, sfx.CavalryFolder[0], 0.5f);
             }
             if (soldierMarch > 2)
             {
-                sfx.PlayLongClip(4,sfx.MarchingFolder[0], 0.5f);
-            }            
+                sfx.PlayLongClip(4, sfx.MarchingFolder[0], 0.5f);
+            }
 
             // Arrow Rerouting
-            foreach ( KeyValuePair<int,Arrow> ark in allArrows )
+            foreach (KeyValuePair<int, Arrow> ark in allArrows)
             {
-                if ( ark.Value.should_reroute )
+                if (ark.Value.should_reroute)
                 {
-                    if ( allUnits[ark.Value.neID].mode == 1 && (!allUnits[ark.Value.neID].is_suddenHalt) && allUnits[ark.Value.neID].nx > -1 && allUnits[ark.Value.neID].ny > -1 )
-                    {                                                
+                    if (allUnits[ark.Value.neID].mode == 1 && (!allUnits[ark.Value.neID].is_suddenHalt) && allUnits[ark.Value.neID].nx > -1 && allUnits[ark.Value.neID].ny > -1)
+                    {
                         //Logger(ark.Value.atX + "," + ark.Value.atY +" -> "+ allUnits[ark.Value.neID].x +","+ allUnits[ark.Value.neID].y);
                         ark.Value.atX = allUnits[ark.Value.neID].x;
                         ark.Value.atY = allUnits[ark.Value.neID].y;
@@ -2020,55 +2022,55 @@ public class Begin
             #endregion
 
             #region Treasury and Hack Check
-            
+
             if (COINS != ZCode.ZCOINS)
             {
                 // Client Hack
                 // Notify and End the Game
             }
-            if ( !ZCode.isGameOver )
+            if (!ZCode.isGameOver)
             {
                 float adjuster = 2.2f;
                 COINS += ((int)adjuster);// The Coin Generation Logic - HACKER PROOF
                 ZCode.ZAIGEMS += ((int)adjuster);// These are used by AI
             }
             ZCode.ZCOINS = COINS;
-            ZCode.ZGTIME = gtime+1;// here time is below incremented
+            ZCode.ZGTIME = gtime + 1;// here time is below incremented
 
             #endregion
 
             #region The AI MODULE
-            
-            if ( XStatics.NOP <= 1 && !ZCode.isAIdefeated )// switching off AI while debugging
-            {                
+
+            if (XStatics.NOP <= 1 && !ZCode.isAIdefeated)// switching off AI while debugging
+            {
                 int _weakF = -1;
                 int WeakX = -1;
                 int WeakY = -1;
-                foreach( KeyValuePair<int,int> _tgid in ArchCounts )
+                foreach (KeyValuePair<int, int> _tgid in ArchCounts)
                 {
-                    if ( (ArchCounts[_tgid.Key] > (counts[_tgid.Key]-1)) && (ArchCounts[_tgid.Key] > _weakF))//P1 Archer Band
+                    if ((ArchCounts[_tgid.Key] > (counts[_tgid.Key] - 1)) && (ArchCounts[_tgid.Key] > _weakF))//P1 Archer Band
                     {
                         WeakX = centroids_X[_tgid.Key];
                         WeakY = centroids_Y[_tgid.Key];
                     }
                 }
-                int AImaxUnit = XStatics.xArmyCap ;
-                if (ZCode.ZAIUnits < AImaxUnit )
+                int AImaxUnit = XStatics.xArmyCap;
+                if (ZCode.ZAIUnits < AImaxUnit)
                 {
                     int maxUCO = 0;
                     int favUnit = 1;
                     int[] zRomansUnitCount = new int[ZCode.ZDECK.Length];
                     foreach (KeyValuePair<int, Fighter> entry in allUnits)
                     {
-                        if ( entry.Value.pid == 1 )// Romans
+                        if (entry.Value.pid == 1)// Romans
                         {
                             zRomansUnitCount[entry.Value.wid]++;
                         }
                     }
-                    for (int ai2 = 1; ai2 < zRomansUnitCount.Length ; ai2++)
+                    for (int ai2 = 1; ai2 < zRomansUnitCount.Length; ai2++)
                     {
                         int cmco = (ZCode.ZDECK[ai2] + zRomansUnitCount[ai2]);
-                        if ( cmco > maxUCO)
+                        if (cmco > maxUCO)
                         {
                             maxUCO = cmco;
                             favUnit = ai2;
@@ -2080,7 +2082,7 @@ public class Begin
                     if (favUnit == 1) { oppUnit = 2; }//2 Pike so using Archers
                     if (favUnit == 2) { oppUnit = 3; }//3 Archers so using Cav
                     if (favUnit == 3) { oppUnit = 1; }//1 Cav so using Pikes
-                    if ( ZCode.ZAlive == 0 )
+                    if (ZCode.ZAlive == 0)
                     {
                         oppUnit = 1; // choosing pikes and shot when player is awaiting
                     }
@@ -2088,10 +2090,10 @@ public class Begin
                     int aiSpwanPointY = (int)UnityEngine.Random.Range(2, 10);
                     int aiMoveX = -1;
                     int aiMoveY = -1;
-                    if ( ZCode.ZAlive > ZCode.ZAIUnits )
+                    if (ZCode.ZAlive > ZCode.ZAIUnits)
                     {
-                        oppUnit = 1;                                                                        
-                        _isDefensive = true;                        
+                        oppUnit = 1;
+                        _isDefensive = true;
                         if (_isDefensive)
                         {
                             if (WeakX > -1 && WeakY > -1)
@@ -2101,21 +2103,21 @@ public class Begin
                                 aiMoveY = WeakY;
                                 if (WeakX < groundLength / 2)
                                 {
-                                    WeakX = (groundLength / 2) ;
+                                    WeakX = (groundLength / 2);
                                 }
                                 if (WeakY > groundWidth / 2)
                                 {
-                                    WeakY = (groundWidth / 2) ;
+                                    WeakY = (groundWidth / 2);
                                 }
                                 aiSpwanPointX = WeakX;
                                 aiSpwanPointY = WeakY;
                                 //check if aispawnPoint Y is free for attack
                                 bool isTrap = false;
-                                for (int chkLine = aiSpwanPointX; chkLine > aiMoveX ; chkLine--)
+                                for (int chkLine = aiSpwanPointX; chkLine > aiMoveX; chkLine--)
                                 {
                                     int middleman = grid[chkLine, aiSpwanPointY, 0];
                                     if (middleman > 0 && allUnits[middleman].tid != TID && allUnits[middleman].wid % 2 != 0)
-                                    {                                        
+                                    {
                                         isTrap = true;
                                         break;
                                     }
@@ -2128,7 +2130,7 @@ public class Begin
                                     {
                                         int ddx = aiSpwanPointX + dCapX[i];
                                         int ddy = aiSpwanPointY + dCapY[i];
-                                        if (!( ddx < 0 || ddy < 0 || ddx >= groundLength || ddy >= groundWidth ))
+                                        if (!(ddx < 0 || ddy < 0 || ddx >= groundLength || ddy >= groundWidth))
                                         {
                                             int sideman = grid[ddx, ddy, 0];
                                             if (sideman > 0 && allUnits[sideman].tid != TID && allUnits[sideman].wid % 2 != 0)
@@ -2136,19 +2138,19 @@ public class Begin
                                                 isTrap = true;
                                                 break;
                                             }
-                                        }                                        
+                                        }
                                     }
                                 }
                                 if (isTrap)
                                 {
                                     oppUnit = 1;
                                     aiSpwanPointX = 25;
-                                    aiSpwanPointY = 5;                                    
+                                    aiSpwanPointY = 5;
                                 }
                                 else
                                 {
-                                    oppUnit = 3;                                    
-                                }                                
+                                    oppUnit = 3;
+                                }
                             }
                             else
                             {
@@ -2159,30 +2161,30 @@ public class Begin
                     }
                     //Spwan Function
                     int[] oppDeck = new int[ZCode.ZDECK.Length];
-                    if ( oppUnit == 2 || oppUnit == 1 )
+                    if (oppUnit == 2 || oppUnit == 1)
                     {
-                        oppDeck[oppUnit] = ZCode.ZAIGEMS / ZCode.ZUnitCosts[oppUnit] ;
+                        oppDeck[oppUnit] = ZCode.ZAIGEMS / ZCode.ZUnitCosts[oppUnit];
                     }
                     else// for cav
-                    {                        
+                    {
                         oppDeck[oppUnit] = (ZCode.ZAIGEMS - (2 * ZCode.ZUnitCosts[2])) / ZCode.ZUnitCosts[oppUnit];
                     }
                     //Logger("oppUnit:"+oppUnit);
-                    if ( (ZCode.ZAIUnits + oppDeck[oppUnit]) > AImaxUnit)
+                    if ((ZCode.ZAIUnits + oppDeck[oppUnit]) > AImaxUnit)
                     {
                         oppDeck[oppUnit] = AImaxUnit - ZCode.ZAIUnits;
-                    }                                        
-                    if (oppDeck[oppUnit] > 2 || _isDefensive )// Minimum 3 units
+                    }
+                    if (oppDeck[oppUnit] > 2 || _isDefensive)// Minimum 3 units
                     {
-                        bool shoud_arch_spawn = oppUnit == 3 && (!_isDefensive) ? true : false;    
-                        int spawnedAIS = oppDeck[oppUnit];                        
-                        int eGS = SpawnFunction(2, oppDeck, aiSpwanPointX , aiSpwanPointY );// For now i am using PID later on pid from request                        
-                        if ( aiMoveX > -1 && aiMoveY > -1 )
+                        bool shoud_arch_spawn = oppUnit == 3 && (!_isDefensive) ? true : false;
+                        int spawnedAIS = oppDeck[oppUnit];
+                        int eGS = SpawnFunction(2, oppDeck, aiSpwanPointX, aiSpwanPointY);// For now i am using PID later on pid from request                        
+                        if (aiMoveX > -1 && aiMoveY > -1)
                         {
                             //Logger("Made to atck"+eGS);
                             foreach (KeyValuePair<int, Fighter> entry in allUnits)
                             {
-                                if ( entry.Value.gid == eGS )
+                                if (entry.Value.gid == eGS)
                                 {
                                     entry.Value.ex = aiMoveX;
                                     entry.Value.ey = aiMoveY;
@@ -2190,30 +2192,30 @@ public class Begin
                                 }
                             }
                         }
-                        
+
                         if (shoud_arch_spawn)
                         {
                             oppDeck[oppUnit] = 0;
                             oppDeck[2] = 2;
-                            aiSpwanPointX = (int)UnityEngine.Random.Range(26, 28);                            
+                            aiSpwanPointX = (int)UnityEngine.Random.Range(26, 28);
                             SpawnFunction(2, oppDeck, aiSpwanPointX, aiSpwanPointY);
                         }
-                        ZCode.ZAIGEMS -= ( spawnedAIS * ZCode.ZUnitCosts[oppUnit]);                        
-                        if (shoud_arch_spawn )
+                        ZCode.ZAIGEMS -= (spawnedAIS * ZCode.ZUnitCosts[oppUnit]);
+                        if (shoud_arch_spawn)
                         {
                             ZCode.ZAIGEMS -= (2 * ZCode.ZUnitCosts[2]);
-                        }                        
-                    }                    
+                        }
+                    }
                 }
-                if ( ZCode.ZAIUnits < ZCode.ZAlive )
+                if (ZCode.ZAIUnits < ZCode.ZAlive)
                 {
                     ZCode.isDrummedByAI = false;
                 }
                 // IDLE AI MANAGEMENT #sri archers attacking red cavalry 3rd July
                 foreach (KeyValuePair<int, Fighter> entry in allUnits)
                 {
-                    if (entry.Value.pid == 2 && entry.Value.x < groundLength/2 && (!entry.Value.is_marching) && // P2 IDLE UNITS IN P1's TOWN
-                        ( entry.Value.wid % 2 != 0 && (entry.Value.mode == 0 || (entry.Value.mode == 1 && entry.Value.is_suddenHalt)) ))                    
+                    if (entry.Value.pid == 2 && entry.Value.x < groundLength / 2 && (!entry.Value.is_marching) && // P2 IDLE UNITS IN P1's TOWN
+                        (entry.Value.wid % 2 != 0 && (entry.Value.mode == 0 || (entry.Value.mode == 1 && entry.Value.is_suddenHalt))))
                     {
                         //Logger("Deploying _wid:"+entry.Value.wid+" at ("+entry.Value.x+","+entry.Value.y+") to ebase");
                         entry.Value.ex = 5;
@@ -2222,23 +2224,23 @@ public class Begin
                         entry.Value.is_marching = true;
                     }
                 }
-                    // ......................
-                if ( ZCode.ZAIUnits > AImaxUnit/2 && ZCode.ZAIUnits > ZCode.ZAlive )
+                // ......................
+                if (ZCode.ZAIUnits > AImaxUnit / 2 && ZCode.ZAIUnits > ZCode.ZAlive)
                 {// Advance Functions
                     if (!ZCode.isDrummedByAI)
                     {
-                        sfx.PlayLongClip(1,sfx.EDrumsFolder[0], 0.5f);                        
+                        sfx.PlayLongClip(1, sfx.EDrumsFolder[0], 0.5f);
                         ZCode.isDrummedByAI = true;
                     }
                     int dtry = (int)UnityEngine.Random.Range(1, 10);
                     foreach (KeyValuePair<int, Fighter> entry in allUnits)
                     {
-                        if ( entry.Value.pid == 2 && // Only P2
-                            (!entry.Value.is_AIMarched || ( entry.Value.is_AIMarched && entry.Value.wid%2!=0 && ( entry.Value.mode == 0 || ( entry.Value.mode==1&&entry.Value.is_suddenHalt) ) )))// Make Enemy March
+                        if (entry.Value.pid == 2 && // Only P2
+                            (!entry.Value.is_AIMarched || (entry.Value.is_AIMarched && entry.Value.wid % 2 != 0 && (entry.Value.mode == 0 || (entry.Value.mode == 1 && entry.Value.is_suddenHalt)))))// Make Enemy March
                         {
-                            if ( entry.Value.wid == 1 || entry.Value.wid == 3 )
+                            if (entry.Value.wid == 1 || entry.Value.wid == 3)
                             {
-                                if ( UnityEngine.Random.Range(1,10)<5 )
+                                if (UnityEngine.Random.Range(1, 10) < 5)
                                 {
                                     entry.Value.ex = 5;
                                     entry.Value.ey = (int)UnityEngine.Random.Range(4, 6);
@@ -2248,14 +2250,14 @@ public class Begin
                                     entry.Value.ex = 5;
                                     entry.Value.ey = (int)UnityEngine.Random.Range(5, 8);
                                 }
-                                
+
                             }
-                            else if ( entry.Value.wid == 2 )
+                            else if (entry.Value.wid == 2)
                             {
                                 entry.Value.ex = ZCode.TowerX[1];
-                                entry.Value.ey = dtry ;
-                                entry.Value.is_GivenAtkOrdr = true;                         
-                            }                            
+                                entry.Value.ey = dtry;
+                                entry.Value.is_GivenAtkOrdr = true;
+                            }
 
                             entry.Value.is_marching = true;
                             entry.Value.is_AIMarched = true;
@@ -2268,14 +2270,14 @@ public class Begin
             fps = 0;
             //Test.gridprint(grid, gtime, allUnits);// helper to be removed later
             DateTime endD = DateTime.Now;
-            TimeSpan gapD = ( endD - startD );
+            TimeSpan gapD = (endD - startD);
             //Logger( gapD.TotalSeconds );
 
             #endregion
-        }        
+        }
         fps++;
-        
-    }        
+
+    }
 
     #region Helper Methods
 
@@ -2334,7 +2336,7 @@ public class Fighter
 
     #region Helper Variables
 
-    public int hitCount ;       // for doing arrow stuff
+    public int hitCount;       // for doing arrow stuff
     public bool is_AIMarched;// suddenHalt
     public bool is_suddenHalt;// suddenHalt
     public bool is_relocated; // relocation
@@ -2385,7 +2387,7 @@ public class Fighter
         ny = -1;
         thealth = health;
         hitCount = 0;
-    }    
+    }
 
     #endregion
 
@@ -2395,7 +2397,7 @@ public class Fighter
     {
         Constants c = new Constants(_wid);
         range = c.getRange();
-        health = c.getHealth();        
+        health = c.getHealth();
         attack = c.getAttack();
         handattack = c.getHandattack();
         areaattack = c.getAreaattack();
@@ -2422,7 +2424,7 @@ public class Fighter
             " M : {13}" +
             " R : {14}" +
 
-        "", id, gid, wid, pid, health, x, y, z, ex, ey, ez, eid, egid , mode , is_relocated?1:0 );
+        "", id, gid, wid, pid, health, x, y, z, ex, ey, ez, eid, egid, mode, is_relocated ? 1 : 0);
     }
 
     #endregion
@@ -2470,10 +2472,10 @@ public class Constants
         {
             range = 10;
             health = 7000;//12000
-            attack = 40 ;
+            attack = 40;
             handattack = attack;
             speed = 1;
-            delay = 1;            
+            delay = 1;
         }
         else if (wid == 1) // PikeMen
         {
@@ -2505,7 +2507,7 @@ public class Constants
         else
         {
             return; // Err Log
-        }        
+        }
 
     }
 
@@ -2594,7 +2596,7 @@ public class Arrow
 
     #region Constructors
 
-    public Arrow( int _atype ,int _id, int _apid, int _dmg , int _ax , int _ay , int _atX , int _atY , int adelay , bool _should_reroute , int _neID )
+    public Arrow(int _atype, int _id, int _apid, int _dmg, int _ax, int _ay, int _atX, int _atY, int adelay, bool _should_reroute, int _neID)
     {
         atype = _atype;
         id = _id;
@@ -2606,11 +2608,11 @@ public class Arrow
         atY = _atY;
         angle = 0;
         upangle = 0;
-        step = 0;        
+        step = 0;
         waitTime = 1;
-        height = 2.6f;        
-        maxStep = 7 + ( waitTime * adelay ) ;
-        releaseTime = (int)UnityEngine.Random.Range(1, (maxStep-1) );
+        height = 2.6f;
+        maxStep = 7 + (waitTime * adelay);
+        releaseTime = (int)UnityEngine.Random.Range(1, (maxStep - 1));
         climb = 0.7f; // for archer...for crossbow make it small
         ADelay = adelay;
         is_useful = false;
@@ -2625,12 +2627,12 @@ public class Arrow
     #endregion
 
     #region Managing Methods
-    public string RouteArrow( )
+    public string RouteArrow()
     {
         string info = "";
-        info += "OLD realdist"+realdist;
+        info += "OLD realdist" + realdist;
         realdist = (float)Math.Sqrt(((atX - ax) * (atX - ax)) + ((atY - ay) * (atY - ay)));
-        realdist *= 2.6f;        
+        realdist *= 2.6f;
         climb = realdist / 50f;
         fwd = realdist / ADelay;
         info += " realdist" + realdist;
